@@ -1,18 +1,24 @@
-from sklearn.feature_extraction.text import TfidfVectorizer
-from sklearn.metrics.pairwise import cosine_similarity
+import pandas as pd
+from sqlalchemy import create_engine, inspect
 
-# Sample news titles
-title1 = "JCh-2026 saralashi. O‘zbekiston safarda Eron bilan durang qayd etib, guruhda 2-o‘rinni egalladi"
-title2 = "JCH—2026 saralashi. O‘zbekiston Eron bilan durang qayd etdi"
+# PostgreSQL connection string
+POSTGRES_URL = "postgresql+psycopg2://test_user:test_password@localhost:6000/test_db"
+# SQLite connection string
+SQLITE_URL = "sqlite:///sqlite.db"
 
-# Initialize the TF-IDF Vectorizer
-vectorizer = TfidfVectorizer()
+# Create SQLAlchemy engines
+postgres_engine = create_engine(POSTGRES_URL)
+sqlite_engine = create_engine(SQLITE_URL)
 
-# Transform the titles into TF-IDF vectors
-tfidf_matrix = vectorizer.fit_transform([title1, title2])
+# List of tables to transfer
+tables = ['news', 'category', 'source', 'url', 'user', 'view']
 
-# Compute cosine similarity between the two vectors
-cosine_sim = cosine_similarity(tfidf_matrix[0:1], tfidf_matrix[1:2])
+# Loop through each table and transfer data
+for table in tables:
+    # Read data from PostgreSQL table
+    df = pd.read_sql_table(table, postgres_engine)
+    
+    # Write data to SQLite table
+    df.to_sql(table, sqlite_engine, if_exists='replace', index=False)
 
-print(f"Cosine Similarity: {cosine_sim[0][0]}")
-print(f"Can save?: {cosine_sim[0][0] > 0.5}")
+print("Data transfer complete.")
