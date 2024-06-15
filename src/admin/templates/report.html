@@ -1,0 +1,73 @@
+{% extends "layout.html" %}
+{% block content %}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Doughnut Chart with Bootstrap and Chart.js</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+
+<body>
+
+    <div class="container-fluid">
+        <canvas id="doughnutChart" width="500" height="500"></canvas>
+    </div>
+
+
+    <script>
+        var regions = {{ regions | tojson | safe }};
+
+        var labels = [];
+        var percentages = [];
+        var backgroundColors = [];
+
+        regions.forEach(function (region) {
+            labels.push(region.name);
+            percentages.push(region.count)
+
+            var randomColor = '#' + Math.floor(Math.random() * 16777215).toString(16);
+            backgroundColors.push(randomColor);
+        });
+
+        var data = {
+            labels: labels,
+            datasets: [{
+                label: 'Sotuvlar soni',
+                data: percentages,
+                backgroundColor: backgroundColors,
+                borderColor: 'rgba(75, 192, 192, 1)',
+                borderWidth: 1
+            }]
+        };
+
+        // Get the canvas element
+        var ctx = document.getElementById('doughnutChart').getContext('2d');
+
+        // Create a doughnut chart
+        var myDoughnutChart = new Chart(ctx, {
+            type: 'doughnut',
+            data: data,
+            options: {
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        max: 100
+                    }
+                },
+                responsive: true,
+                maintainAspectRatio: false,
+            }
+        });
+    </script>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+
+</html>
+
+
+{% endblock %}

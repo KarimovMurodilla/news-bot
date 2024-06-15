@@ -1,0 +1,41 @@
+version: '3.7'
+services:
+  redis:
+    build:
+      context: buildfiles
+      dockerfile: redis.dockerfile
+    env_file:
+      - .env.prod
+    restart: on-failure
+    ports:
+      - "6378:6378"
+  db:
+    image: postgres:15-alpine
+    env_file:
+      - .env.prod
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    restart: on-failure
+    ports:
+      - "3779:5432"
+  bot: &bot
+    build:
+      context: .
+      dockerfile: buildfiles/Dockerfile
+    env_file:
+      - .env.prod
+    restart: always
+    depends_on:
+      - db
+      - redis
+  admin:
+    <<: *bot
+    depends_on:
+      - db
+      - redis
+    ports:
+      - "8200:8000"
+    command: poetry run python -m uvicorn src.admin.main:app --host 0.0.0.0 --port 8000 --forwarded-allow-ips='*' --proxy-headers
+
+volumes:
+  pgdata:

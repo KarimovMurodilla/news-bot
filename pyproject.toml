@@ -1,0 +1,92 @@
+[tool.poetry]
+name = "asia-plast-bot"
+version = "0.1.0"
+description = "Official telegram bot for Asia plast"
+authors = ["MassonNn <ilyalyapin@duck.com>"]
+license = "MIT License"
+readme = "README.md"
+packages = []
+
+[tool.poetry.dependencies]
+python = "^3.10"
+aiogram = "^3.0b6"
+sqlalchemy = "^2.0.17"
+asyncpg = "^0.28.0"
+alembic = "^1.9.2"
+redis = "^4.4.2"
+jinja2 = "^3.1.2"
+greenlet = "^2.0.2"
+python-dotenv = "^1.0.1"
+environs = "^10.3.0"
+fluentogram = "^1.1.6"
+qrcode = "^7.4.2"
+sqladmin = "^0.16.1"
+fastapi = "^0.110.0"
+uvicorn = "^0.27.1"
+itsdangerous = "^2.1.2"
+mypy = "^1.9.0"
+
+[tool.poetry.group.dev]
+optional=true
+
+[tool.poetry.group.dev.dependencies]
+pytest = "^7.2.1"
+pytest-asyncio = "^0.20.3"
+mypy = "^1.0.1"
+ruff = "^0.0.275"
+blue = "^0.9.1"
+
+[tool.ruff]
+line-length = 88
+dummy-variable-rgx = "^(_+|(_+[a-zA-Z0-9_]*[a-zA-Z0-9]+?))$"
+target-version = "py310"
+select = [
+    "E", # pycodestyle
+    "F", # pyflakes
+    "UP", # pyupgrade
+    "D", # pydocstyle
+]
+fixable = [
+    "A", "C", "D", "E", "F", "G",
+    "I", "N", "Q", "S", "T", "W", "ANN",
+    "ARG", "BLE", "COM", "DJ", "DTZ", "EM",
+    "ERA", "EXE", "FBT", "ICN", "INP", "ISC",
+    "NPY", "PD", "PGH", "PIE", "PL", "PT", "PTH",
+    "PYI", "RET", "RSE", "RUF", "SIM", "SLF", "TCH",
+    "TID", "TRY", "UP", "YTT"
+]
+unfixable = ["B"]
+exclude = [
+    ".bzr",
+    ".direnv",
+    ".eggs",
+    ".git",
+    ".git-rewrite",
+    ".hg",
+    ".mypy_cache",
+    ".nox",
+    ".pants.d",
+    ".pytype",
+    ".ruff_cache",
+    ".svn",
+    ".tox",
+    ".venv",
+    "__pypackages__",
+    "_build",
+    "buck-out",
+    "build",
+    "dist",
+    "node_modules",
+    "venv",
+]
+
+[tool.ruff.pydocstyle]
+convention = "google"
+
+[tool.ruff.flake8-quotes]
+docstring-quotes = "double"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
