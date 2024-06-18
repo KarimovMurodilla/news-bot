@@ -35,7 +35,7 @@ class DatabaseConfig:
             port=self.port,
             host=self.host,
         ).render_as_string(hide_password=False)
-
+    
 
 @dataclass
 class RedisConfig:

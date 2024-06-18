@@ -46,7 +46,9 @@ class NewsRepo(Repository[News]):
     async def get_all_by_category(self, category_id: int) -> News:
         """Get user role by id."""
         result = await self.session.scalars(
-            select(News).where(News.category_id == category_id)
+            select(News)
+            .where(News.category_id == category_id)
+            .order_by(News.date.desc())
         )
         return result.all()
     

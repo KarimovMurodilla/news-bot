@@ -1,5 +1,18 @@
 FROM docker.io/python:3.11.7-slim-bookworm as python-base
 
+# Install locales and generate uz_UZ.UTF-8 locale
+RUN apt-get update && \
+    apt-get install -y locales && \
+    locale-gen uz_UZ.UTF-8 && \
+    apt-get clean && \
+    rm -rf /var/lib/apt/lists/*
+
+# Set environment variables for the locale
+ENV LANG=uz_UZ.UTF-8  
+ENV LANGUAGE=uz_UZ:uz  
+ENV LC_ALL=uz_UZ.UTF-8
+
+
 ENV POETRY_VERSION=1.5.1 \
     POETRY_HOME=/opt/poetry \
     POETRY_VENV=/opt/poetry-venv \

@@ -68,7 +68,7 @@ class BaseParser(ABC):
         locale.setlocale(locale.LC_TIME, 'uz_UZ.UTF-8')
         
         date_obj = datetime.strptime(date_str, "%Y-%m-%d %H:%M:%S")
-        formatted_date = date_obj.strftime("%B %d, %y")
+        formatted_date = date_obj.strftime("%B %d, %y %H:%M")
         return formatted_date
 
     async def parse_all_and_save(self):
@@ -104,7 +104,3 @@ class BaseParser(ABC):
                                 await self.save_data(data)
                 except Exception as e:
                     print(e)
-                    print(category.name)
-                    print(url.url)
-                    print("Raw data:", raw_data)
-                    print("Parsed data:", parsed_data)
