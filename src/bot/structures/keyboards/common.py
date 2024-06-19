@@ -15,12 +15,18 @@ def show_languages():
 
 def show_categories():
     kb = [
-        [types.KeyboardButton(text="Jamiyat")],
-        [types.KeyboardButton(text="Sport")],
-        [types.KeyboardButton(text="Siyosat")],
-        [types.KeyboardButton(text="Iqtisodiyot")],
-        [types.KeyboardButton(text="Texnologiya")],
-        [types.KeyboardButton(text="Dunyo")],
+        [
+            types.KeyboardButton(text="Jamiyat 👫🏻"),
+            types.KeyboardButton(text="Sport 🥇")
+        ],
+        [
+            types.KeyboardButton(text="Siyosat 📝"),
+            types.KeyboardButton(text="Iqtisodiyot 💵")
+        ],
+        [
+            types.KeyboardButton(text="Texnologiya 🤖"),
+            types.KeyboardButton(text="Dunyo 🌍")
+        ],
     ]
     keyboard = types.ReplyKeyboardMarkup(keyboard=kb, resize_keyboard=True)
 

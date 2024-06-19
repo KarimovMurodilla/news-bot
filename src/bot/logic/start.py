@@ -1,6 +1,6 @@
 """This file represents a start logic."""
 
-from aiogram import Router, types
+from aiogram import Router, types, html
 from aiogram.fsm.context import FSMContext
 from aiogram.filters import CommandStart
 

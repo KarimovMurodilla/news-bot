@@ -19,7 +19,8 @@ news_router = Router(name='news')
 
 @news_router.message()
 async def category_handler(message: types.Message, db: Database, state: FSMContext):
-    category = message.text.lower()
+    text_and_emoji = message.text.split()
+    category = text_and_emoji[0].lower()
 
     category = await db.category.get_by_name(category)
     news = await db.news.get_all_by_category(category_id=category.id)
@@ -30,7 +31,7 @@ async def category_handler(message: types.Message, db: Database, state: FSMConte
             for new in news
     ]
 
-    result = "".join([content for content in contents[:10]])
+    result = "".join([content for content in contents[:5]])
     
     await message.answer(
         text = result,
@@ -43,7 +44,7 @@ async def category_handler(message: types.Message, db: Database, state: FSMConte
     await state.update_data(
         contents=contents,
         start = 0,
-        end = 10
+        end = 5
     )
 
 
@@ -52,21 +53,21 @@ async def callback_back(c: types.CallbackQuery, state: FSMContext):
     data = await state.get_data()
     contents = data['contents']
     start = data.get('start', 0)
-    end = data.get('end', 10)
+    end = data.get('end', 5)
 
     try:
         if c.data == "next":
-            if 0 < (len(contents) - end) < 10:
-                start += 10
+            if 0 < (len(contents) - end) < 5:
+                start += 5
                 end += (len(contents) - end)
 
             elif (len(contents) - end) > 0:
-                start += 10
-                end += 10
+                start += 5
+                end += 5
         
         elif c.data == "back":
             if start > 0:
-                start, end = start-10, start
+                start, end = start-5, start
             
         result = "".join([content for content in contents[start:end]])
         await c.message.edit_text(
