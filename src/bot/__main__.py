@@ -3,6 +3,7 @@ import asyncio
 import logging
 
 from aiogram import Bot
+from aiogram.client.default import DefaultBotProperties
 from redis.asyncio.client import Redis
 
 from src.bot.dispatcher import get_dispatcher, get_redis_storage
@@ -19,7 +20,7 @@ from src.scheduler.tasks import parse_and_save_db
 
 async def start_bot():
     """This function will start bot with polling mode."""
-    bot = Bot(token=conf.bot.token, parse_mode='html')
+    bot = Bot(token=conf.bot.token, default=DefaultBotProperties(parse_mode='html'))
     cache = Cache()
     storage = get_redis_storage(
         redis=Redis(
