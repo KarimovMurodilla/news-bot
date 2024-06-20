@@ -7,6 +7,10 @@ RUN apt-get update && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/*
 
+# Generate the uz_UZ.UTF-8 locale
+RUN echo "uz_UZ.UTF-8 UTF-8" >> /etc/locale.gen && \
+    locale-gen uz_UZ.UTF-8
+
 # Set environment variables for the locale
 ENV LANG=uz_UZ.UTF-8  
 ENV LANGUAGE=uz_UZ:uz  

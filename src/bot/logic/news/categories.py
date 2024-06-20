@@ -23,6 +23,10 @@ async def category_handler(message: types.Message, db: Database, state: FSMConte
     category = text_and_emoji[0].lower()
 
     category = await db.category.get_by_name(category)
+
+    if not category:
+        return
+    
     news = await db.news.get_all_by_category(category_id=category.id)
 
     contents = [
