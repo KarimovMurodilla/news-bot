@@ -13,9 +13,9 @@ from ..db.models import (
 
 
 class UserAdmin(ModelView, model=User):
-    column_list = [User.user_id, User.user_name, User.first_name, User.second_name]
+    column_list = [User.user_id, User.user_name, User.first_name, User.second_name, User.is_active]
     can_create = False
-    can_edit = False
+    can_edit = True
     can_delete = False
     icon = "fa-solid fa-users"
     name_plural = "Users"
