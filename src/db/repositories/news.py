@@ -56,7 +56,7 @@ class NewsRepo(Repository[News]):
         # Calculate the time 30 minutes ago from now
         thirty_minutes_ago = datetime.datetime.utcnow() - datetime.timedelta(minutes=15)
         
-        stmt = select(News).where(News.created_at >= thirty_minutes_ago)
+        stmt = select(News).where(News.created_at >= thirty_minutes_ago).order_by(News.date.desc())
         result = await self.session.execute(stmt)        
         news_list = result.scalars().all()
         
