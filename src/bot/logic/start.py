@@ -29,7 +29,7 @@ async def start_handler(message: types.Message, db: Database, translator: Locali
             user_name=message.from_user.username,
             first_name=message.from_user.first_name,
             second_name=message.from_user.last_name,
-            is_premium=bool(message.from_user.is_premium),
+            is_premium=bool(message.from_user.is_premium)
         )
         await db.session.commit()
 

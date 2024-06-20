@@ -87,20 +87,20 @@ class BaseParser(ABC):
 
                 recent_news = await db.news.get_recent_news(url.language, url.category_id)
 
-                try:
-                    for data in parsed_data:
-                        news = await db.news.get_by_url(data['url'])
-                    
-                        if not news:
-                            can_save = True
-                            for new in recent_news:
-                                similarity = calculate(new.title, data['title'])
-                                if similarity > 0.5:
-                                    can_save = False
-                                    break
-                                
-                            if can_save:
-                                print("----------Saved---------")
-                                await self.save_data(data)
-                except Exception as e:
-                    print(e)
+                # try:
+                for data in parsed_data:
+                    news = await db.news.get_by_url(data['url'])
+                
+                    if not news:
+                        can_save = True
+                        for new in recent_news:
+                            similarity = calculate(new.title, data['title'])
+                            if similarity > 0.5:
+                                can_save = False
+                                break
+                            
+                        if can_save:
+                            print("----------Saved---------")
+                            await self.save_data(data)
+                # except Exception as e:
+                #     print(e)

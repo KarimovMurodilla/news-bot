@@ -33,6 +33,9 @@ class User(Base):
     is_premium: Mapped[bool] = mapped_column(
         sa.Boolean, unique=False, nullable=False
     )
+    is_active: Mapped[bool] = mapped_column(
+        sa.Boolean, unique=False, nullable=True
+    )
     """ Telegram user premium status """
     created_at: Mapped[Optional[Annotated[datetime.datetime, mapped_column(nullable=False, default=datetime.datetime.utcnow)]]]
 

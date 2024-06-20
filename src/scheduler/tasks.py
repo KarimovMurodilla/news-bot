@@ -7,6 +7,8 @@ from src.scraper.parsers.darakchi_uz import DarakchiUzParser
 from src.scraper.parsers.yuz_uz import YuzUzParser
 from src.scraper.parsers.zamin_uz import ZaminUzParser
 
+from src.bot.utils.broadcaster import Broadcast
+
 
 async def parse_and_save_db():
     kun_uz = KunUzParser() # No permission
@@ -29,3 +31,7 @@ async def parse_and_save_db():
     await yuz_uz.parse_all_and_save()
     await zamin_uz.parse_all_and_save()
 
+    broadcaster = Broadcast()
+    await broadcaster.broadcast()
+
+    

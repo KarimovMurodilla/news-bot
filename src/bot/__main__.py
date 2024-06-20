@@ -6,12 +6,12 @@ from aiogram import Bot
 from aiogram.client.default import DefaultBotProperties
 from redis.asyncio.client import Redis
 
-from src.bot.dispatcher import get_dispatcher, get_redis_storage
-from src.bot.structures.data_structure import TransferData
 from src.cache import Cache
 from src.configuration import conf
 from src.db.database import create_async_engine
 from src.language.translator import Translator
+from src.bot.dispatcher import get_dispatcher, get_redis_storage
+from src.bot.structures.data_structure import TransferData
 
 from apscheduler.schedulers.asyncio import AsyncIOScheduler
 from apscheduler.triggers.interval import IntervalTrigger
@@ -34,7 +34,7 @@ async def start_bot():
     dp = get_dispatcher(storage=storage)
 
     scheduler = AsyncIOScheduler()
-    scheduler.add_job(parse_and_save_db, IntervalTrigger(seconds=3600))
+    scheduler.add_job(parse_and_save_db, IntervalTrigger(hours=1))
     scheduler.start()
 
     await dp.start_polling(

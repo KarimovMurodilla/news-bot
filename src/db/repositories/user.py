@@ -1,6 +1,6 @@
 """User repository file."""
 
-from sqlalchemy import select
+from sqlalchemy import select, update
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from src.bot.structures.role import Role
@@ -23,18 +23,8 @@ class UserRepo(Repository[User]):
         first_name: str | None = None,
         second_name: str | None = None,
         is_premium: bool | None = False,
+        is_active: bool | None = True,
     ) -> None:
-        """Insert a new user into the database.
-
-        :param user_id: Telegram user id
-        :param user_name: Telegram username
-        :param first_name: Telegram profile first name
-        :param second_name: Telegram profile second name
-        :param language_code: Telegram profile language code
-        :param is_premium: Telegram user premium status
-        :param role: User's role
-        :param user_chat: Telegram chat with user.
-        """
         await self.session.merge(
             User(
                 user_id=user_id,
@@ -42,6 +32,7 @@ class UserRepo(Repository[User]):
                 first_name=first_name,
                 second_name=second_name,
                 is_premium=is_premium,
+                is_active=is_active
             )
         )
         await self.session.commit()
@@ -51,3 +42,22 @@ class UserRepo(Repository[User]):
         return await self.session.scalar(
             select(User).where(User.user_id == user_id).limit(1)
         )
+    
+    async def get_all_users(self):
+        """Get user role by id."""
+        result = await self.session.scalars(
+            select(User).where(User.is_active == True)
+        )
+        users = result.all()
+        return users
+
+    async def update_user(self, user_id: int, **kwargs) -> User:
+        """Update user by id with new data."""
+        async with self.session.begin():
+            stmt = (
+                update(User)
+                .where(User.user_id == user_id)
+                .values(**kwargs)
+            )
+            await self.session.execute(stmt)
+            await self.session.commit()
