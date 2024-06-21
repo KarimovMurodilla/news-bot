@@ -21,15 +21,15 @@ async def parse_and_save_db():
     yuz_uz = YuzUzParser()
     zamin_uz = ZaminUzParser()
 
-    # # await kun_uz.parse_all_and_save()
-    # # await daryo_uz.parse_all_and_save()
+    # await kun_uz.parse_all_and_save()
+    # await daryo_uz.parse_all_and_save()
 
-    # await uza_uz.parse_all_and_save()
-    # await zamon_uz.parse_all_and_save()
-    # await dunyo_info.parse_all_and_save()
-    # await darakchi_uz.parse_all_and_save()
-    # await yuz_uz.parse_all_and_save()
-    # await zamin_uz.parse_all_and_save()
+    await uza_uz.parse_all_and_save()
+    await zamon_uz.parse_all_and_save()
+    await dunyo_info.parse_all_and_save()
+    await darakchi_uz.parse_all_and_save()
+    await yuz_uz.parse_all_and_save()
+    await zamin_uz.parse_all_and_save()
 
     broadcaster = Broadcast()
     await broadcaster.broadcast()
