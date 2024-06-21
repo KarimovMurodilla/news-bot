@@ -11,7 +11,7 @@ from src.configuration import conf
 from src.db.database import create_async_engine
 
 
-class Broadcast:
+class Broadcaster:
     def __init__(self):
         logging.basicConfig(level=logging.INFO)
         self.log = logging.getLogger('broadcast')
@@ -44,7 +44,7 @@ class Broadcast:
                 "dunyo": "Dunyo 🌍"
             }
 
-            if len(news) < 5000:
+            if len(news) < 5:
                 return
 
             for new in news:
