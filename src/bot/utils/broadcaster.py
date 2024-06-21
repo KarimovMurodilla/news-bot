@@ -44,6 +44,9 @@ class Broadcast:
                 "dunyo": "Dunyo 🌍"
             }
 
+            if len(news) < 5000:
+                return
+
             for new in news:
                 category = await db.category.get(new.category_id)
                 category_name = category_with_emoji[category.name]
@@ -110,6 +113,10 @@ class Broadcast:
         try:
             users = await self.get_users()
             message = await self.get_message()
+
+            if not message:
+                return
+            
             for user_id in users:
                 if await self.send_message(user_id, message):
                     count += 1
