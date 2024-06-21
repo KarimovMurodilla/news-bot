@@ -48,6 +48,7 @@ class GovUzParser(BaseParser):
                 {
                     "title": data['title'],
                     "url": f"https://{self.name}/edu/news/view/" + data['id'],
+                    "image_url": data['anons_image'],
                     "source": self.name,
                     "category": self.category,
                     "date": datetime_object,

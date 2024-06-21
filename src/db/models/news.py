@@ -15,6 +15,9 @@ class News(Base):
     url: Mapped[str] = mapped_column(
         sa.Text, unique=False, nullable=True
     )
+    image_url: Mapped[str] = mapped_column(
+        sa.Text, unique=False, nullable=True
+    )
     category_id: Mapped[int] = mapped_column(
         sa.ForeignKey('category.id', ondelete='CASCADE'),
         unique=False,

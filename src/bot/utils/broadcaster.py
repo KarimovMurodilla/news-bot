@@ -44,6 +44,7 @@ class Broadcaster:
                 "dunyo": "Dunyo 🌍"
             }
 
+            print("Len of news:", len(news))
             if len(news) < 5:
                 return
 
@@ -61,7 +62,7 @@ class Broadcaster:
                     result_d[category_name].append(content)
 
             result = [f"{i[0]}\n\n{''.join(i[1])}" for i in result_d.items()]
-            final_text = "Oxirgi yangiliklar:\n\n" + "".join(result)
+            final_text = "So’nggi yangiliklar:\n\n" + "".join(result)
 
             return final_text
 

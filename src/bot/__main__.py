@@ -14,6 +14,7 @@ from src.bot.dispatcher import get_dispatcher, get_redis_storage
 from src.bot.structures.data_structure import TransferData
 
 from apscheduler.schedulers.asyncio import AsyncIOScheduler
+from apscheduler.triggers.cron import CronTrigger
 from apscheduler.triggers.interval import IntervalTrigger
 from src.scheduler.tasks import parse_and_save_db
 
@@ -34,7 +35,7 @@ async def start_bot():
     dp = get_dispatcher(storage=storage)
 
     scheduler = AsyncIOScheduler()
-    scheduler.add_job(parse_and_save_db, IntervalTrigger(hours=1))
+    scheduler.add_job(parse_and_save_db, CronTrigger(minute=0))
     scheduler.start()
 
     await dp.start_polling(

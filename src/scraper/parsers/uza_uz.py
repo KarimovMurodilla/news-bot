@@ -47,6 +47,7 @@ class UzaUzParser(BaseParser):
                 {
                     "title": data['title'],
                     "url": f"https://{self.name}/oz/posts/" + data['slug'],
+                    "image_url": data['files']['thumbnails']['normal']['src'],
                     "source": self.name,
                     "category": self.category,
                     "date": datetime_object,

@@ -11,6 +11,7 @@ class DataStorage:
     async def save(self, db: Database, data: dict):
         title = data['title']
         url = data['url']
+        image_url = data['image_url']
         source = await db.source.get_by_url(data['source'])
         category = await db.category.get_by_name(data['category'])
         date = data['date']
@@ -20,6 +21,7 @@ class DataStorage:
         await db.news.new(
             title=title,
             url=url,
+            image_url=image_url,
             category=category.id,
             source=source.id,
             date=date,

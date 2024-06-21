@@ -53,13 +53,16 @@ class DarakchiUzParser(BaseParser):
 
                 card_text = card_body.find('p', class_="card-text")
                 date = card_text.get_text(strip=True)
-
                 datetime_object = datetime.strptime(date, "%d.%m.%Y, %H:%M")
+
+                card = data.find('div', class_="card")
+                image_url = card.find('img', class_="img-fluid")['src']
 
                 result.append(
                     {
                         "title": title,
                         "url": url,
+                        "image_url": image_url,
                         "source": self.name,
                         "category": self.category,
                         "date": datetime_object,

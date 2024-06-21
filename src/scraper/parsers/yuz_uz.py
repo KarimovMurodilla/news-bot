@@ -80,13 +80,17 @@ class YuzUzParser(BaseParser):
                 item_month = item_data.find('span', class_="newsItem-month").get_text()
                 item_time = item_data.find('span', class_="newsItem-time").get_text(strip=True)
                 date_str = f"{item_month}, {item_time}"
-
                 datetime_object = self.__extract_date_from_uz_date_str(date_str)
+
+                item_image = data.find('div', class_="newsItem-image")
+                image_tag = item_image.find('img', class_="slider__image")['data-srcset']
+                image_url = image_tag.strip().split(',')[-2].split()[0]
 
                 result.append(
                     {
                         "title": title,
                         "url": f"https://{self.name}{url}",
+                        "image_url": image_url,
                         "source": self.name,
                         "category": self.category,
                         "date": datetime_object,

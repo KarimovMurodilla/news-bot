@@ -49,6 +49,7 @@ class ZamonUzParser(BaseParser):
                 {
                     "title": data['title'],
                     "url": f"https://{self.name}/detail/" + data['url'],
+                    "image_url": data['image']['original'],
                     "source": self.name,
                     "category": self.category,
                     "date": datetime_object,

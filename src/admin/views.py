@@ -32,6 +32,9 @@ class NewsAdmin(ModelView, model=News):
     column_list = [
         News.title, News.url, News.date,
     ]
+    column_searchable_list = [News.title, News.url, News.date]
+    column_sortable_list = [News.title, News.url, News.date]
+    
     icon = "fa-solid fa-news"
     name_plural = "News"
     

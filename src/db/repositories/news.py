@@ -18,6 +18,7 @@ class NewsRepo(Repository[News]):
         self,
         title: str,
         url: str,
+        image_url: str,
         category: int,
         source: int,
         language: str,
@@ -28,6 +29,7 @@ class NewsRepo(Repository[News]):
             News(
                 title=title,
                 url=url,
+                image_url=image_url,
                 category_id=category,
                 source_id=source,
                 language=language,
@@ -43,7 +45,7 @@ class NewsRepo(Repository[News]):
             select(News).where(News.url == url).limit(1)
         )
 
-    async def get_all_by_category(self, category_id: int) -> News:
+    async def get_all_by_category(self, category_id: int):
         """Get user role by id."""
         result = await self.session.scalars(
             select(News)

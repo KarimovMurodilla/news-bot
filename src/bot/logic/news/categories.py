@@ -28,7 +28,15 @@ async def category_handler(message: types.Message, db: Database, state: FSMConte
         return
     
     news = await db.news.get_all_by_category(category_id=category.id)
+    images = [new.image_url for new in news]
 
+    image_url = None
+    for image in images:
+        if image and image != 'https://darakchi.uz/images/no-image.png':
+            image_url = image
+            break
+
+    print("Image url:", image_url)
     contents = [
         f"{html.bold(value=new.title)}\n"
         f"{html.link(value=await db.source.get(new.source_id),link=new.url)}\t{new.formatted_date}\n\n" 
@@ -37,24 +45,35 @@ async def category_handler(message: types.Message, db: Database, state: FSMConte
 
     result = "".join([content for content in contents[:5]])
     
-    await message.answer(
-        text = result,
-        parse_mode=ParseMode.HTML,
-        disable_web_page_preview=True,
-        reply_markup=common.show_pagination_buttons()
-    )
+    if image_url:
+        await message.answer_photo(
+            photo=image_url,
+            caption = result,
+            parse_mode=ParseMode.HTML,
+            disable_web_page_preview=True,
+            reply_markup=common.show_pagination_buttons()
+        )
+    else:
+        await message.answer(
+            text = result,
+            parse_mode=ParseMode.HTML,
+            disable_web_page_preview=True,
+            reply_markup=common.show_pagination_buttons()
+        )
 
     await state.set_state(CategoryGroup.step1)
     await state.update_data(
-        contents=contents,
+        contents = contents,
+        images = images,
         start = 0,
         end = 5
     )
 
 
 @news_router.callback_query(CategoryGroup.step1)
-async def callback_back(c: types.CallbackQuery, state: FSMContext):
+async def callback_pagination(c: types.CallbackQuery, state: FSMContext):
     data = await state.get_data()
+    images = data['images']
     contents = data['contents']
     start = data.get('start', 0)
     end = data.get('end', 5)
@@ -74,18 +93,41 @@ async def callback_back(c: types.CallbackQuery, state: FSMContext):
                 start, end = start-5, start
             
         result = "".join([content for content in contents[start:end]])
-        await c.message.edit_text(
-            text=result,
-            reply_markup=common.show_pagination_buttons(),
-            disable_web_page_preview=True
-        )
+        image_url = None
+        for image in images[start:end]:
+            if image and image != 'https://darakchi.uz/images/no-image.png':
+                image_url = image
+                break
+
+        if image_url:
+            await c.message.edit_media(
+                media=types.InputMediaPhoto(
+                    media=image_url,
+                    caption=result
+                ),
+                reply_markup=common.show_pagination_buttons(),
+                disable_web_page_preview=True
+            )
+        elif not c.message.photo:
+            await c.message.edit_text(
+                text=result,
+                reply_markup=common.show_pagination_buttons(),
+                disable_web_page_preview=True
+            )           
+        else:
+            await c.message.edit_caption(
+                caption=result,
+                reply_markup=common.show_pagination_buttons(),
+            )
         await c.answer()
-        
-    except TelegramBadRequest:
-        await c.answer("No more data")
-    
-    finally:
+
         await state.update_data(
             start=start,
             end=end
         )
+    except TelegramBadRequest as tbr:
+        print(tbr)
+        await c.answer("No more data")
+    
+    except Exception as e:
+        print(e)

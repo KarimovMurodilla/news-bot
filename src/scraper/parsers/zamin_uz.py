@@ -80,10 +80,13 @@ class ZaminUzParser(BaseParser):
                         date_str = short_date.get_text(strip=True)
                         datetime_object = self.__extract_date_from_uz_date_str(date_str)
 
+                        image_url = data.find('img')['src']
+
                     result.append(
                         {
                             "title": title,
                             "url": url,
+                            "image_url": f"https://{self.name}{image_url}",
                             "source": self.name,
                             "category": self.category,
                             "date": datetime_object,

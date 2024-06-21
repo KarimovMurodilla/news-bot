@@ -11,8 +11,8 @@ from src.bot.utils.broadcaster import Broadcaster
 
 
 async def parse_and_save_db():
-    kun_uz = KunUzParser() # No permission
-    daryo_uz = DaryoUzParser() # No permission
+    # kun_uz = KunUzParser() # No permission
+    # daryo_uz = DaryoUzParser() # No permission
 
     uza_uz = UzaUzParser()
     zamon_uz = ZamonUzParser()

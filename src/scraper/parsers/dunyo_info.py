@@ -49,6 +49,7 @@ class DunyoInfoParser(BaseParser):
                 {
                     "title": data['title'],
                     "url": f"https://{self.name}/{self.language}/{slug}/" + data['slug'],
+                    "image_url": 'https://api.dunyo.info/' + data['img'],
                     "source": self.name,
                     "category": self.category,
                     "date": datetime_object,
