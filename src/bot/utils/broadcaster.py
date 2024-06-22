@@ -51,7 +51,7 @@ class Broadcaster:
             content = [
                 f"- {html.bold(value=new.title)}\n" \
                 f"{html.link(value=await db.source.get(new.source_id),link=new.url)}\t{new.formatted_date}\n\n"
-                for new in news[:2]
+                for new in news[:3]
             ]
             # for new in news:
             #     category = await db.category.get(new.category_id)
