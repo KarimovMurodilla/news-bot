@@ -73,13 +73,13 @@ class Broadcaster:
                 if count >= 3:
                     break
 
-            result = [f"{i[0]}\n\n{''.join(i[1])}" for i in result_d.items()]
+            result = [f"{i[0]}\n{''.join(i[1])}" for i in result_d.items()]
             # result = "".join(content)
             final_text = "So’nggi yangiliklar:\n\n" + "".join(result) + "👉 @uzvip_news"
 
             image_url = None
             for new in news:
-                if new.image_url and new.image_url != 'https://darakchi.uz/images/no-image.png':
+                if new.image_url and 'darakchi.uz' not in new.image_url:
                     image_url = new.image_url
                     break
 

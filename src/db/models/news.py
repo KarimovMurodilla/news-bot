@@ -3,6 +3,7 @@ import datetime
 from typing import Annotated, Optional
 import sqlalchemy as sa
 from sqlalchemy.orm import Mapped, mapped_column
+from src.misc.cosine_similarity import calculate
 
 from .base import Base
 
@@ -43,3 +44,10 @@ class News(Base):
 
     def __str__(self):
         return f"{self.url}"
+
+    def __eq__(self, other):
+        similarity = calculate(self.title, other['title'])
+        # print('Db data:', self.title)
+        # print('Parsed data:', other['title'])
+        # print("Similarity:", similarity)
+        return similarity >= 0.5

@@ -32,11 +32,10 @@ async def category_handler(message: types.Message, db: Database, state: FSMConte
 
     image_url = None
     for image in images:
-        if image and image != 'https://darakchi.uz/images/no-image.png':
+        if image and 'darakchi.uz' not in image:
             image_url = image
             break
 
-    print("Image url:", image_url)
     contents = [
         f"{html.bold(value=new.title)}\n"
         f"{html.link(value=await db.source.get(new.source_id),link=new.url)}\t{new.formatted_date}\n\n" 
@@ -95,7 +94,7 @@ async def callback_pagination(c: types.CallbackQuery, state: FSMContext):
         result = "".join([content for content in contents[start:end]])
         image_url = None
         for image in images[start:end]:
-            if image and image != 'https://darakchi.uz/images/no-image.png':
+            if image and 'darakchi.uz' not in image:
                 image_url = image
                 break
 

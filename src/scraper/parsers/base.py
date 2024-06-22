@@ -77,37 +77,23 @@ class BaseParser(ABC):
             source = await db.source.get_by_url(self.name)
             urls = await db.url.get_by_source(source_id=source.id)
             
-            for url in urls:
-                category = await db.category.get(url.category_id)
+            try:
+                for url in urls:
+                    category = await db.category.get(url.category_id)
 
-                self._load_attrs(category=category.name, url=url.url, language=url.language)
+                    self._load_attrs(category=category.name, url=url.url, language=url.language)
 
-                raw_data = await self.fetch_data()
-                parsed_data = self.parse_data(raw_data)
+                    raw_data = await self.fetch_data()
+                    parsed_data = self.parse_data(raw_data)
 
-                recent_news = await db.news.get_recent_news(url.language, url.category_id)
+                    recent_news = await db.news.get_recent_news(url.language, url.category_id)
 
-                # try:
-                for data in parsed_data:
-                    news = await db.news.get_by_url(data['url'])
-                
-                    if not news:
-                        can_save = True
-                        for new in recent_news:
-                            similarity = calculate(new.title, data['title'])
-                            if similarity > 0.5:
-                                print("There is similarity bro:")
-                                print(new.title, new.url)
-                                print(data['title'], data['url'])
-                                print("Similarity:", similarity, end='\n\n')
-                                
-                                can_save = False
-                                break
-                        
-                        print(can_save)
-                        if can_save:
-                            # print("Title:", data['title'])
-                            print("----------Saved---------")
+                    for data in parsed_data:
+                        if data not in recent_news:
+                            print(data['title'])
+                            print("---Saved---")
                             await self.save_data(data)
-                # except Exception as e:
-                #     print(e)
+                        else:
+                            print("Not saved:", data['title'])
+            except Exception as e:
+                print(e)
