@@ -36,39 +36,41 @@ class Broadcaster:
             result_d = {}
 
             category_with_emoji = {
-                "jamiyat": "Jamiyat 👫🏻",
-                "sport": "Sport 🥇",
-                "siyosat": "Siyosat 📝",
-                "iqtisodiyot": "Iqtisodiyot 💵",
-                "texnologiya": "Texnologiya 🤖",
-                "dunyo": "Dunyo 🌍"
+                "jamiyat": "#jamiyat 👫🏻",
+                "sport": "#sport 🥇",
+                "siyosat": "#siyosat 📝",
+                "iqtisodiyot": "#iqtisodiyot 💵",
+                "texnologiya": "#texnologiya 🤖",
+                "dunyo": "#dunyo 🌍"
             }
 
             print("Len of news:", len(news))
             if len(news) < 3:
                 return
 
-            content = [
-                f"- {html.bold(value=new.title)}\n" \
-                f"{html.link(value=await db.source.get(new.source_id),link=new.url)}\t{new.formatted_date}\n\n"
-                for new in news[:3]
-            ]
-            # for new in news:
-            #     category = await db.category.get(new.category_id)
-            #     category_name = category_with_emoji[category.name]
+            # content = [
+            #     f"- {html.bold(value=new.title)}\n" \
+            #     f"{html.link(value=await db.source.get(new.source_id),link=new.url)}\t{new.formatted_date}\n\n"
+            #     for new in news[:3]
+            # ]
 
-                # content =   f"- {html.bold(value=new.title)}\n" \
-                #             f"{html.link(value=await db.source.get(new.source_id),link=new.url)}\t{new.formatted_date}\n\n"
+            result = []
+            for new in news[:3]:
+                category = await db.category.get(new.category_id)
+                category_name = category_with_emoji[category.name]
+
+                content =   f"- {html.bold(value=new.title)}\n" \
+                            f"{html.link(value=await db.source.get(new.source_id),link=new.url)}\t{new.formatted_date}\n\n"
                 
-            #     if not result_d.get(category_name):
-            #         result_d[category_name] = []
+                if not result_d.get(category_name):
+                    result_d[category_name] = []
 
-            #     if len(result_d.get(category_name)) < 3:
-            #         result_d[category_name].append(content)
+                # if len(result_d.get(category_name)) < 3:
+                result_d[category_name].append(content)
 
-            # result = [f"{i[0]}\n\n{''.join(i[1])}" for i in result_d.items()]
-            result = "".join(content)
-            final_text = "So’nggi yangiliklar:\n\n" + "".join(result)
+            result = [f"{i[0]}\n\n{''.join(i[1])}" for i in result_d.items()]
+            # result = "".join(content)
+            final_text = "So’nggi yangiliklar:\n\n" + "".join(result) + "👉 @uzvip_news"
 
             return final_text, news[0].image_url
 
