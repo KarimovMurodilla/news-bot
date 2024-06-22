@@ -85,6 +85,7 @@ class Configuration:
 
     ADMINS = list(map(int, getenv("ADMINS").split(',')))
     SECRET_KEY: str = getenv('SECRET_KEY')
+    CHANNEL_ID: int = getenv('CHANNEL_ID')
     ADMIN_LOGIN = getenv('ADMIN_LOGIN')
     ADMIN_PASSWORD = getenv('ADMIN_PASSWORD')
     

@@ -54,9 +54,9 @@ class NewsRepo(Repository[News]):
         )
         return result.all()
     
-    async def get_recent_news_last_15_minutes(self):
+    async def get_recent_news_last_5_minutes(self):
         # Calculate the time 30 minutes ago from now
-        thirty_minutes_ago = datetime.datetime.utcnow() - datetime.timedelta(minutes=15)
+        thirty_minutes_ago = datetime.datetime.utcnow() - datetime.timedelta(minutes=5)
         
         stmt = select(News).where(News.created_at >= thirty_minutes_ago).order_by(News.date.desc())
         result = await self.session.execute(stmt)        

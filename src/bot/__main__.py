@@ -35,7 +35,7 @@ async def start_bot():
     dp = get_dispatcher(storage=storage)
 
     scheduler = AsyncIOScheduler()
-    scheduler.add_job(parse_and_save_db, CronTrigger(minute=0))
+    scheduler.add_job(parse_and_save_db, IntervalTrigger(minutes=10))
     scheduler.start()
 
     await dp.start_polling(

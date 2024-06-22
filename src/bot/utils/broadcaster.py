@@ -31,7 +31,7 @@ class Broadcaster:
         async with AsyncSession(self.engine) as session:
             db = Database(session)
 
-            news = await db.news.get_recent_news_last_15_minutes()
+            news = await db.news.get_recent_news_last_5_minutes()
 
             result_d = {}
 
@@ -45,28 +45,34 @@ class Broadcaster:
             }
 
             print("Len of news:", len(news))
-            if len(news) < 5:
+            if len(news) < 3:
                 return
 
-            for new in news:
-                category = await db.category.get(new.category_id)
-                category_name = category_with_emoji[category.name]
+            content = [
+                f"- {html.bold(value=new.title)}\n" \
+                f"{html.link(value=await db.source.get(new.source_id),link=new.url)}\t{new.formatted_date}\n\n"
+                for new in news[:2]
+            ]
+            # for new in news:
+            #     category = await db.category.get(new.category_id)
+            #     category_name = category_with_emoji[category.name]
 
-                content =   f"- {html.bold(value=new.title)}\n" \
-                            f"{html.link(value=await db.source.get(new.source_id),link=new.url)}\t{new.formatted_date}\n\n"
+                # content =   f"- {html.bold(value=new.title)}\n" \
+                #             f"{html.link(value=await db.source.get(new.source_id),link=new.url)}\t{new.formatted_date}\n\n"
                 
-                if not result_d.get(category_name):
-                    result_d[category_name] = []
+            #     if not result_d.get(category_name):
+            #         result_d[category_name] = []
 
-                if len(result_d.get(category_name)) < 3:
-                    result_d[category_name].append(content)
+            #     if len(result_d.get(category_name)) < 3:
+            #         result_d[category_name].append(content)
 
-            result = [f"{i[0]}\n\n{''.join(i[1])}" for i in result_d.items()]
+            # result = [f"{i[0]}\n\n{''.join(i[1])}" for i in result_d.items()]
+            result = "".join(content)
             final_text = "So’nggi yangiliklar:\n\n" + "".join(result)
 
-            return final_text
+            return final_text, news[0].image_url
 
-    async def send_message(self, user_id: int, text: str, disable_notification: bool = False) -> bool:
+    async def send_message(self, user_id: int, message: str, disable_notification: bool = False) -> bool:
         """
         Safe messages sender
 
@@ -76,11 +82,11 @@ class Broadcaster:
         :return:
         """
         try:
-            await self.bot.send_message(
-                chat_id=user_id, 
-                text=text, 
-                disable_notification=disable_notification,
-                disable_web_page_preview=True
+            await self.bot.send_photo(
+                chat_id=user_id,
+                photo=message[1],
+                caption=message[0], 
+                disable_notification=disable_notification
             )
         except exceptions.TelegramForbiddenError:
             self.log.error(f"Target [ID:{user_id}]: blocked by user")
@@ -92,7 +98,7 @@ class Broadcaster:
         except exceptions.TelegramRetryAfter as e:
             self.log.error(f"Target [ID:{user_id}]: Flood limit is exceeded. Sleep {e.retry_after} seconds.")
             await asyncio.sleep(e.retry_after)
-            return await self.send_message(user_id, text)  # Recursive call
+            return await self.send_message(user_id, message)  # Recursive call
         except exceptions.TelegramBadRequest:
             self.log.error(f"Target [ID:{user_id}]: user is deactivated")
         except exceptions.TelegramAPIError:
@@ -118,10 +124,10 @@ class Broadcaster:
             if not message:
                 return
             
-            for user_id in users:
-                if await self.send_message(user_id, message):
-                    count += 1
-                await asyncio.sleep(.05)  # 20 messages per second (Limit: 30 messages per second)
+            # for user_id in users:
+            await self.send_message(conf.CHANNEL_ID, message)
+            #     count += 1
+            # await asyncio.sleep(.05)  # 20 messages per second (Limit: 30 messages per second)
         finally:
             self.log.info(f"{count} messages successful sent.")
 

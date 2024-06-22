@@ -96,10 +96,17 @@ class BaseParser(ABC):
                         for new in recent_news:
                             similarity = calculate(new.title, data['title'])
                             if similarity > 0.5:
+                                print("There is similarity bro:")
+                                print(new.title, new.url)
+                                print(data['title'], data['url'])
+                                print("Similarity:", similarity, end='\n\n')
+                                
                                 can_save = False
                                 break
-                            
+                        
+                        print(can_save)
                         if can_save:
+                            # print("Title:", data['title'])
                             print("----------Saved---------")
                             await self.save_data(data)
                 # except Exception as e:
