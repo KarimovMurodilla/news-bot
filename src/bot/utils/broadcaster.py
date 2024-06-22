@@ -45,8 +45,8 @@ class Broadcaster:
             }
 
             print("Len of news:", len(news))
-            if len(news) < 3:
-                return
+            # if len(news) < 3:
+            #     return
 
             # content = [
             #     f"- {html.bold(value=new.title)}\n" \
@@ -55,7 +55,9 @@ class Broadcaster:
             # ]
 
             result = []
-            for new in news[:3]:
+            count = 0
+            for new in news:
+                count += 1
                 category = await db.category.get(new.category_id)
                 category_name = category_with_emoji[category.name]
 
@@ -68,11 +70,20 @@ class Broadcaster:
                 # if len(result_d.get(category_name)) < 3:
                 result_d[category_name].append(content)
 
+                if count >= 3:
+                    break
+
             result = [f"{i[0]}\n\n{''.join(i[1])}" for i in result_d.items()]
             # result = "".join(content)
             final_text = "So’nggi yangiliklar:\n\n" + "".join(result) + "👉 @uzvip_news"
 
-            return final_text, news[0].image_url
+            image_url = None
+            for new in news:
+                if new.image_url and new.image_url != 'https://darakchi.uz/images/no-image.png':
+                    image_url = new.image_url
+                    break
+
+            return final_text, image_url
 
     async def send_message(self, user_id: int, message: str, disable_notification: bool = False) -> bool:
         """
@@ -87,7 +98,7 @@ class Broadcaster:
             await self.bot.send_photo(
                 chat_id=user_id,
                 photo=message[1],
-                caption=message[0], 
+                caption=message[0],
                 disable_notification=disable_notification
             )
         except exceptions.TelegramForbiddenError:
