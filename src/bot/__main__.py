@@ -1,4 +1,5 @@
 """This file represent startup bot logic."""
+import pytz
 import asyncio
 import logging
 
@@ -34,7 +35,7 @@ async def start_bot():
     )
     dp = get_dispatcher(storage=storage)
 
-    scheduler = AsyncIOScheduler()
+    scheduler = AsyncIOScheduler(timezone=pytz.timezone('Asia/Tashkent'))
     scheduler.add_job(parse_and_save_db, CronTrigger(minute='0,10,20,30,40,50', hour='6-23'))
     # scheduler.add_job(parse_and_save_db, IntervalTrigger(minutes=10))
     scheduler.start()

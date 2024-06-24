@@ -89,11 +89,13 @@ class BaseParser(ABC):
                     recent_news = await db.news.get_recent_news(url.language, url.category_id)
 
                     for data in parsed_data:
-                        if data not in recent_news:
-                            print(data['title'])
-                            print("---Saved---")
-                            await self.save_data(data)
-                        else:
-                            print("Not saved:", data['title'])
+                        new = await db.news.get_by_url(data['url'])
+                        if not new:
+                            if data not in recent_news:
+                                print(data['title'])
+                                print("---Saved---")
+                                await self.save_data(data)
+                            else:
+                                print("Not saved:", data['title'])
             except Exception as e:
                 print(e)
