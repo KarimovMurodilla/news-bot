@@ -23,7 +23,7 @@ async def parse_and_save_db():
     now = datetime.now(timezone)
     hour = int(now.strftime("%H"))
 
-    if hour >= 10 and hour < 11:
+    if hour >= 6 and hour <= 23:
         uza_uz = UzaUzParser()
         zamon_uz = ZamonUzParser()
         dunyo_info = DunyoInfoParser()

@@ -78,7 +78,7 @@ class Broadcaster:
             if not result:
                 return
             
-            final_text = "So’nggi yangiliklar:\n\n" + "".join(result) + "👉 @uzvip_news"
+            final_text = "".join(result) + "👉 @uzvip_news"
 
             image_url = None
             for new in news:
