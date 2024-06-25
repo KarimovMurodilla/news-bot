@@ -8,7 +8,7 @@ from src.configuration import conf
 
 from .repositories import (
     UserRepo, NewsRepo, ViewRepo,
-    CategoryRepo, SourceRepo, UrlRepo,
+    CategoryRepo, SourceRepo, UrlRepo
 )
 
 

@@ -22,10 +22,12 @@ class XabarUzParser(BaseParser):
 
     async def fetch_data(self):
         url = self.url
-        url = 'https://xabar.uz/uz/siyosat'
+        headers = {
+            "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36"
+        }
 
         try:
-            async with ClientSession(trust_env=True) as session:
+            async with ClientSession(trust_env=True, headers=headers) as session:
                 async with session.get(url) as response:
                     if response.status == 200:
                         return await response.text()
@@ -56,38 +58,35 @@ class XabarUzParser(BaseParser):
 
         result = []
 
-        print("Len of data:", raw_data)
-
         for data in all_data:
             if isinstance(data, Tag):
                 news_title = data.find('p', class_='news__item-title')
-                title = news_title.get_text()
+                title = news_title.get_text(strip=True)
                 url = news_title.find('a')['href']
 
                 news_meta = data.find('p', class_='news__item-meta')
-                date_str = news_meta.get_text()
+                date_str = news_meta.get_text(strip=True)
 
                 datetime_object = self.__extract_date_from_uz_date_str(date_str)
 
-                # if datetime_object:
-                result.append(
-                    {
-                        "title": title,
-                        "url": url,
-                        "image_url": None,
-                        "source": self.name,
-                        "category": self.category,
-                        "date": datetime_object,
-                        "language": self.language,
-                        "formatted_date": self.format_date(str(datetime_object))
-                    }
-                )
+                if datetime_object:
+                    result.append(
+                        {
+                            "title": title,
+                            "url": url,
+                            "image_url": None,
+                            "source": self.name,
+                            "category": self.category,
+                            "date": datetime_object,
+                            "language": self.language,
+                            "formatted_date": self.format_date(str(datetime_object))
+                        }
+                    )
 
-        print(result)
-        # return result
+        return result
 
-    async def save_data(self, parsed_data):
+    async def save_data(self, data):
         async with AsyncSession(self.engine) as session:
             db = Database(session)
             data_store = DataStorage()
-            await data_store.save_to_db(db, parsed_data)
+            await data_store.save_to_db(db, data)

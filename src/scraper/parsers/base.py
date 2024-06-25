@@ -31,39 +31,13 @@ class BaseParser(ABC):
         pass
 
     @abstractmethod
-    async def save_data(self, parsed_data):
+    async def save_data(self, data):
         """Save the parsed data to a desired location"""
         pass
 
     @abstractmethod
     async def _load_attrs(self):
         pass
-
-    async def run(self):
-        """Run the complete parsing process"""
-        async with aiohttp.ClientSession() as session:
-            raw_data = await self.fetch_data(session)
-            parsed_data = self.parse_data(raw_data)
-            self.save_data(parsed_data)
-
-        return parsed_data
-
-    async def filter_recent_news(self):
-        raw_data = await self.fetch_data()
-        parsed_data = self.parse_data(raw_data)
-    
-        now = datetime.now()
-        today = now.date()
-        yesterday = today - timedelta(days=1)
-
-        recent_news = []
-        for item in parsed_data:
-            item_date = datetime.strptime(str(item['date']), "%Y-%m-%d %H:%M:%S").date()
-            if item_date == today or item_date == yesterday:
-                recent_news.append(item)
-                
-        await self.save_data(recent_news)
-        return recent_news
     
     def format_date(self, date_str):
         locale.setlocale(locale.LC_TIME, 'uz_UZ.UTF-8')
@@ -87,19 +61,16 @@ class BaseParser(ABC):
                     raw_data = await self.fetch_data()
                     parsed_data = self.parse_data(raw_data)
 
-                    recent_news = await db.news.get_recent_news(url.language, url.category_id)
+                    recent_news = await db.news.get_recent_news(url.category_id)
 
                     for data in parsed_data:
                         date_to_check: datetime = data['date']
                         is_today = datetime.now().date() == date_to_check.date()
 
                         if is_today:
-                            if data not in recent_news:
-                                print(data['title'])
-                                print("---Saved---")
+                            if data not in recent_news:                                
                                 await self.save_data(data)
-                            else:
-                                print("Not saved:", data['title'])
+                                print("---Saved---")
             except Exception as e:
                 traceback.print_exc()
                 print(e)

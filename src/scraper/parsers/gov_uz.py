@@ -59,9 +59,9 @@ class GovUzParser(BaseParser):
 
         return result
 
-    async def save_data(self, parsed_data):
+    async def save_data(self, data):
         async with AsyncSession(self.engine) as session:
             db = Database(session)
             data_store = DataStorage()
-            await data_store.save_to_db(db, parsed_data)
+            await data_store.save_to_db(db, data)
 

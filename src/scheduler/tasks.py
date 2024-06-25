@@ -45,7 +45,7 @@ async def parse_and_save_db():
         await zamin_uz.parse_all_and_save()
         await aniq_uz.parse_all_and_save()
         await xs_uz.parse_all_and_save()
-        # await xabar_uz.parse_all_and_save()
+        await xabar_uz.parse_all_and_save()
 
         broadcaster = Broadcaster()
         await broadcaster.broadcast()

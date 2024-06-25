@@ -9,7 +9,7 @@ from ..configuration import conf
 
 from .views import (
     UserAdmin, NewsAdmin, CategoryAdmin,
-    SourceAdmin, UrlAdmin, ViewAdmin, 
+    SourceAdmin, UrlAdmin, ViewAdmin, SimilarsAdmin
 )
 
 app = FastAPI()
@@ -23,3 +23,4 @@ admin.add_view(CategoryAdmin)
 admin.add_view(SourceAdmin)
 admin.add_view(UrlAdmin)
 admin.add_view(ViewAdmin)
+admin.add_view(SimilarsAdmin)

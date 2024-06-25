@@ -8,7 +8,7 @@ from src.db.database import create_async_engine
 
 
 class DataStorage:
-    async def save(self, db: Database, data: dict):
+    async def save_to_db(self, db: Database, data: dict):
         title = data['title']
         url = data['url']
         image_url = data['image_url']
@@ -28,11 +28,3 @@ class DataStorage:
             formatted_date=formatted_date,
             language=language
         )
-
-    async def save_to_db(self, db: Database, all_data: list | dict):
-        if isinstance(all_data, list):
-            for data in all_data:
-                await self.save(db, data)
-
-        elif isinstance(all_data, dict):
-            await self.save(db, all_data)

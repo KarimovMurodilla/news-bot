@@ -64,12 +64,12 @@ class NewsRepo(Repository[News]):
         
         return news_list
 
-    async def get_recent_news(self, language: str, category_id: int):
+    async def get_recent_news(self, category_id: int):
         last_24_hours = datetime.datetime.utcnow() - datetime.timedelta(days=1)
         
         stmt = (
             select(News)
-            .filter(News.language == language)
+            # .filter(News.language == language)
             .filter(News.category_id == category_id)
             .filter(News.created_at >= last_24_hours)
         )

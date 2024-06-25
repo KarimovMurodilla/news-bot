@@ -29,7 +29,7 @@ class News(Base):
         unique=False,
         nullable=False,
     )
-    date: Mapped[str] = mapped_column(
+    date: Mapped[datetime.datetime] = mapped_column(
         sa.DateTime, unique=False, nullable=True
     )
     formatted_date: Mapped[str] = mapped_column(
@@ -37,7 +37,7 @@ class News(Base):
     )
     language: Mapped[str] = mapped_column(
         sa.VARCHAR(50), unique=False, nullable=True
-    )  
+    )
     created_at: Mapped[Optional[Annotated[
         datetime.datetime, mapped_column(nullable=False, default=datetime.datetime.utcnow)
     ]]]
@@ -47,8 +47,9 @@ class News(Base):
 
     def __eq__(self, other):
         same_url = self.url == other['url']
+
+        if same_url:
+            return True
+        
         similarity = calculate(self.title, other['title'])
-        # print('Db data:', self.title)
-        # print('Parsed data:', other['title'])
-        # print("Similarity:", similarity)
-        return same_url or similarity >= 0.5 
+        return similarity >= 0.5
