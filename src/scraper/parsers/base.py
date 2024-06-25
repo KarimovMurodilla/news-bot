@@ -1,6 +1,7 @@
 # parsers/base_parser.py
 import locale
 import aiohttp
+import traceback
 
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -89,8 +90,10 @@ class BaseParser(ABC):
                     recent_news = await db.news.get_recent_news(url.language, url.category_id)
 
                     for data in parsed_data:
-                        new = await db.news.get_by_url(data['url'])
-                        if not new:
+                        date_to_check: datetime = data['date']
+                        is_today = datetime.now().date() == date_to_check.date()
+
+                        if is_today:
                             if data not in recent_news:
                                 print(data['title'])
                                 print("---Saved---")
@@ -98,4 +101,5 @@ class BaseParser(ABC):
                             else:
                                 print("Not saved:", data['title'])
             except Exception as e:
+                traceback.print_exc()
                 print(e)

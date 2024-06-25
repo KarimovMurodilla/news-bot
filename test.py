@@ -1,24 +1,42 @@
-import pandas as pd
-from sqlalchemy import create_engine, inspect
+import aiohttp
+import asyncio
+import gzip
+from io import BytesIO
+from bs4 import BeautifulSoup
 
-# PostgreSQL connection string
-POSTGRES_URL = "postgresql+psycopg2://test_user:test_password@localhost:6000/test_db"
-# SQLite connection string
-SQLITE_URL = "sqlite:///sqlite.db"
+async def fetch_html(url):
+    async with aiohttp.ClientSession() as session:
+        async with session.get(url) as response:
+            # Read the response content
+            raw_content = await response.read()
+            
+            # Check if the response is gzip-encoded
+            if response.headers.get('Content-Encoding') == 'gzip':
+                # Decompress the gzip-encoded content
+                buffer = BytesIO(raw_content)
+                with gzip.GzipFile(fileobj=buffer) as f:
+                    decompressed_content = f.read()
+            else:
+                decompressed_content = raw_content
 
-# Create SQLAlchemy engines
-postgres_engine = create_engine(POSTGRES_URL)
-sqlite_engine = create_engine(SQLITE_URL)
+            # Decode the decompressed content to a string
+            html_content = decompressed_content.decode('utf-8')
+            return html_content
 
-# List of tables to transfer
-tables = ['news', 'category', 'source', 'url', 'user', 'view']
-
-# Loop through each table and transfer data
-for table in tables:
-    # Read data from PostgreSQL table
-    df = pd.read_sql_table(table, postgres_engine)
+async def parse_html(url):
+    html_content = await fetch_html(url)
+    soup = BeautifulSoup(html_content, 'html.parser')
     
-    # Write data to SQLite table
-    df.to_sql(table, sqlite_engine, if_exists='replace', index=False)
+    # Example: Extract all image URLs
+    all_images = soup.find_all('img')
+    for img in all_images:
+        if 'src' in img.attrs:
+            img_src = img['src']
+            print(f"Image src: {img_src}")
 
-print("Data transfer complete.")
+async def main():
+    url = 'https://xabar.uz/uz/siyosat'
+    await parse_html(url)
+
+# Run the main function
+asyncio.run(main())

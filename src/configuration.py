@@ -88,6 +88,8 @@ class Configuration:
     CHANNEL_ID: int = getenv('CHANNEL_ID')
     ADMIN_LOGIN = getenv('ADMIN_LOGIN')
     ADMIN_PASSWORD = getenv('ADMIN_PASSWORD')
+
+    # IS_TESTER = getenv("IS_TESTER")
     
 
 conf = Configuration()

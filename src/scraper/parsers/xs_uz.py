@@ -1,6 +1,6 @@
-import re
 import asyncio
 import aiohttp
+import locale
 
 from aiohttp import ClientSession, ClientConnectorError
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -12,8 +12,8 @@ from ..data.data_storage import DataStorage
 from src.db.database import Database
 
 
-class DarakchiUzParser(BaseParser):
-    name = "darakchi.uz"
+class XsUzParser(BaseParser):
+    name = "xs.uz"
 
     def _load_attrs(self, category, url, language):
         self.category = category
@@ -37,40 +37,42 @@ class DarakchiUzParser(BaseParser):
             print(f"HTTP error occurred: {e}")
         except Exception as e:
             print(f"An error occurred: {e}")
+
+    def __extract_date_from_uz_date_str(self, date_str: str):
+        # Set the locale to Uzbek
+        locale.setlocale(locale.LC_TIME, 'uz_UZ.UTF-8')
+        date_obj = datetime.strptime(date_str, '%H:%M %d %B %Y')
+
+        return date_obj
                 
     def parse_data(self, raw_data):
         soup = BeautifulSoup(raw_data, 'html.parser')
-        all_data = soup.find_all('div', class_=['col-md-6 col-lg-4 mb-3'])
+        all_data = soup.find('div', class_=['news-items-l'])
 
         result = []
 
         for data in all_data:
             if isinstance(data, Tag):
-                card_body = data.find('div', class_="card-body")
-                a_tag = card_body.find('a')
-                url = a_tag['href']
-                title = a_tag.get_text(strip=True)
+                media_body = data.find('div', class_='media-body')
+                title = media_body.find('a').get_text()
+                url = 'https://xs.uz' + media_body.find('a')['href']
 
-                card_text = card_body.find('p', class_="card-text")
-                date = card_text.get_text(strip=True)
-                datetime_object = datetime.strptime(date, "%d.%m.%Y, %H:%M")
+                date_str = media_body.find('span', class_='date').get_text()
+                datetime_object = self.__extract_date_from_uz_date_str(date_str)
 
-                card = data.find('div', class_="card")
-                # image_url = card.find('img', class_="img-fluid")['src']
-
-                result.append(
-                    {
-                        "title": title,
-                        "url": url,
-                        "image_url": None,
-                        "source": self.name,
-                        "category": self.category,
-                        "date": datetime_object,
-                        "language": self.language,
-                        "formatted_date": self.format_date(str(datetime_object))
-                    }
-                )
-
+                if datetime_object:
+                    result.append(
+                        {
+                            "title": title,
+                            "url": url,
+                            "image_url": None,
+                            "source": self.name,
+                            "category": self.category,
+                            "date": datetime_object,
+                            "language": self.language,
+                            "formatted_date": self.format_date(str(datetime_object))
+                        }
+                    )
         return result
 
     async def save_data(self, parsed_data):

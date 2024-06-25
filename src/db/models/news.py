@@ -46,8 +46,9 @@ class News(Base):
         return f"{self.url}"
 
     def __eq__(self, other):
+        same_url = self.url == other['url']
         similarity = calculate(self.title, other['title'])
         # print('Db data:', self.title)
         # print('Parsed data:', other['title'])
         # print("Similarity:", similarity)
-        return similarity >= 0.5
+        return same_url or similarity >= 0.5 

@@ -75,6 +75,9 @@ class Broadcaster:
 
             result = [f"{i[0]}\n{''.join(i[1])}" for i in result_d.items()]
             # result = "".join(content)
+            if not result:
+                return
+            
             final_text = "So’nggi yangiliklar:\n\n" + "".join(result) + "👉 @uzvip_news"
 
             image_url = None
@@ -95,12 +98,20 @@ class Broadcaster:
         :return:
         """
         try:
-            await self.bot.send_photo(
-                chat_id=user_id,
-                photo=message[1],
-                caption=message[0],
-                disable_notification=disable_notification
-            )
+            if message[1]:
+                await self.bot.send_photo(
+                    chat_id=user_id,
+                    photo=message[1],
+                    caption=message[0],
+                    disable_notification=disable_notification
+                )
+            else:
+                await self.bot.send_message(
+                    chat_id=user_id,
+                    text=message[0],
+                    disable_notification=disable_notification,
+                    disable_web_page_preview=True
+                )
         except exceptions.TelegramForbiddenError:
             self.log.error(f"Target [ID:{user_id}]: blocked by user")
             async with AsyncSession(self.engine) as session:
@@ -112,7 +123,8 @@ class Broadcaster:
             self.log.error(f"Target [ID:{user_id}]: Flood limit is exceeded. Sleep {e.retry_after} seconds.")
             await asyncio.sleep(e.retry_after)
             return await self.send_message(user_id, message)  # Recursive call
-        except exceptions.TelegramBadRequest:
+        except exceptions.TelegramBadRequest as tbr:
+            print(tbr)
             self.log.error(f"Target [ID:{user_id}]: user is deactivated")
         except exceptions.TelegramAPIError:
             self.log.exception(f"Target [ID:{user_id}]: failed")
