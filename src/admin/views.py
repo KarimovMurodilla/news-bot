@@ -8,7 +8,7 @@ from .settings import Session, engine
 
 from ..db.models import (
     User, News, Category, 
-    Source, Url, View, Similars
+    Source, Url, View
 )
 
 
@@ -30,7 +30,7 @@ class UserAdmin(ModelView, model=User):
 
 class NewsAdmin(ModelView, model=News):
     column_list = [
-        News.title, News.url, News.date, News.similarity,
+        News.title, News.url, News.date,
     ]
     column_searchable_list = [News.title, News.url, News.date]
     column_sortable_list = [News.title, News.url, News.date]
@@ -139,15 +139,3 @@ class ViewAdmin(ModelView, model=View):
     def is_accessible(self, request: Request) -> bool:
         return True
 
-class SimilarsAdmin(ModelView, model=Similars):
-    column_list = [
-        Similars.title1, Similars.title2, Similars.similarity, 
-    ]
-    icon = "fa-solid fa-news"
-    name_plural = "Similars"
-    
-    def is_visible(self, request: Request) -> bool:
-        return True
-
-    def is_accessible(self, request: Request) -> bool:
-        return True
