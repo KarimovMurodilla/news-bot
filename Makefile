@@ -35,7 +35,7 @@ run:
 
 .PHONY: admin-run
 admin-run:
-	poetry run python -m uvicorn src.admin.main:app --reload
+	poetry run python -m uvicorn src.admin.main:app
 
 # Poetry and environments utils
 REQUIREMENTS_FILE := requirements.txt

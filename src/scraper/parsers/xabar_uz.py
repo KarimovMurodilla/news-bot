@@ -1,11 +1,10 @@
 import asyncio
 import aiohttp
-import locale
 
 from aiohttp import ClientSession, ClientConnectorError
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from datetime import datetime
+from datetime import datetime, timedelta
 from bs4 import BeautifulSoup, Tag
 from .base import BaseParser
 from ..data.data_storage import DataStorage
@@ -49,8 +48,21 @@ class XabarUzParser(BaseParser):
             time_part = date_str.split('.')[0].strip()[-5:]
             datetime_str = f"{date_part} {time_part}"
             datetime_obj = datetime.strptime(datetime_str, "%Y-%m-%d %H:%M")
+        
+        elif 'soat' in date_str:
+            hour = date_str.split()[0]
+            datetime_obj = now - timedelta(hours=int(hour))
+            datetime_obj = datetime_obj.replace(microsecond=0)
 
-            return datetime_obj
+        elif 'daqiqa' in date_str:
+            minute = date_str.split()[0]
+            datetime_obj = now - timedelta(minutes=int(minute))
+            datetime_obj = datetime_obj.replace(microsecond=0)
+        
+        else:
+            return
+
+        return datetime_obj
                 
     def parse_data(self, raw_data):
         soup = BeautifulSoup(raw_data, 'html.parser')

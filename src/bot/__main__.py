@@ -39,7 +39,6 @@ async def start_bot():
     scheduler.add_job(parse_and_save_db, IntervalTrigger(minutes=10))
     scheduler.start()
 
-
     await dp.start_polling(
         bot,
         allowed_updates=dp.resolve_used_update_types(),

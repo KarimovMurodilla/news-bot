@@ -52,4 +52,4 @@ class News(Base):
             return True
         
         similarity = calculate(self.title, other['title'])
-        return similarity >= 0.5
+        return similarity >= 50
