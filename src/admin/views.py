@@ -34,7 +34,8 @@ class NewsAdmin(ModelView, model=News):
     ]
     column_searchable_list = [News.title, News.url, News.date]
     column_sortable_list = [News.title, News.url, News.date]
-    
+    page_size = 100
+
     icon = "fa-solid fa-news"
     name_plural = "News"
     
@@ -65,6 +66,7 @@ class SourceAdmin(ModelView, model=Source):
     ]
     icon = "fa-solid fa-news"
     name_plural = "Sources"
+    page_size = 100
     
     def is_visible(self, request: Request) -> bool:
         return True

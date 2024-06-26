@@ -12,6 +12,7 @@ from src.scraper.parsers.zamin_uz import ZaminUzParser
 from src.scraper.parsers.aniq_uz import AniqUzParser
 from src.scraper.parsers.xs_uz import XsUzParser
 from src.scraper.parsers.xabar_uz import XabarUzParser
+from src.scraper.parsers.qalampir_uz import QalampirUzParser
 
 from src.bot.utils.broadcaster import Broadcaster
 
@@ -33,6 +34,7 @@ async def parse_and_save_db():
         aniq_uz = AniqUzParser()
         xs_uz = XsUzParser()
         xabar_uz = XabarUzParser()
+        qalampir_uz = QalampirUzParser()
 
         # await kun_uz.parse_all_and_save()
         # await daryo_uz.parse_all_and_save()
@@ -46,6 +48,7 @@ async def parse_and_save_db():
         await aniq_uz.parse_all_and_save()
         await xs_uz.parse_all_and_save()
         await xabar_uz.parse_all_and_save()
+        await qalampir_uz.parse_all_and_save()
 
         broadcaster = Broadcaster()
         await broadcaster.broadcast()
