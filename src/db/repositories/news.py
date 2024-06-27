@@ -1,7 +1,7 @@
 """User repository file."""
 import datetime
 
-from sqlalchemy import select
+from sqlalchemy import select, cast, Date
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from src.bot.structures.role import Role
@@ -64,14 +64,14 @@ class NewsRepo(Repository[News]):
         
         return news_list
 
-    async def get_recent_news(self, category_id: int):
-        last_24_hours = datetime.datetime.utcnow() - datetime.timedelta(days=1)
+    async def get_recent_news(self):
+        today = datetime.date.today()
         
         stmt = (
             select(News)
             # .filter(News.language == language)
-            .filter(News.category_id == category_id)
-            .filter(News.created_at >= last_24_hours)
+            # .filter(News.category_id == category_id)
+            .filter(cast(News.created_at, Date) == today)
         )
         
         result = await self.session.execute(stmt)

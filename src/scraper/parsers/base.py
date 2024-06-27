@@ -61,7 +61,7 @@ class BaseParser(ABC):
                     raw_data = await self.fetch_data()
                     parsed_data = self.parse_data(raw_data)
 
-                    recent_news = await db.news.get_recent_news(url.category_id)
+                    recent_news = await db.news.get_recent_news()
 
                     for data in parsed_data:
                         date_to_check: datetime = data['date']
