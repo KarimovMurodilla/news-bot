@@ -13,17 +13,20 @@ from ..data.data_storage import DataStorage
 class GovUzParser(BaseParser):
     name = "gov.uz"
 
-    def _load_attrs(self, category, url, language):
-        self.category = category
-        self.url = url
-        self.language = language
-
+    def _load_attrs(self, category: str, url: str, language: str):
+        url_and_cat = url.split(',')
+        self.category: str = category
+        self.url: str = url_and_cat[0]
+        self.language: str = language
+        self.url_category = url_and_cat[1]
 
     async def fetch_data(self):
         url = self.url
 
+        headers = {"Code": self.url_category}
+
         try:
-            async with ClientSession(trust_env=True) as session:
+            async with ClientSession(trust_env=True, headers=headers) as session:
                 async with session.get(url) as response:
                     if response.status == 200:
                         return await response.json()
@@ -39,7 +42,6 @@ class GovUzParser(BaseParser):
                 
     def parse_data(self, raw_data):
         all_data = raw_data['data']
-    
         result = []
 
         for data in all_data:
@@ -47,7 +49,7 @@ class GovUzParser(BaseParser):
             result.append(
                 {
                     "title": data['title'],
-                    "url": f"https://{self.name}/edu/news/view/" + data['id'],
+                    "url": f"https://{self.name}/{self.url_category}/news/view/" + str(data['id']),
                     "image_url": data['anons_image'],
                     "source": self.name,
                     "category": self.category,

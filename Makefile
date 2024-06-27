@@ -61,6 +61,10 @@ migrate:
 project-start:
 	sudo docker-compose up --force-recreate ${MODE}
 
+.PHONY: project-restart
+project-restart:
+	sudo docker compose down && sudo docker compose up -d --build
+
 .PHONY: project-stop
 project-stop:
 	sudo docker-compose down --remove-orphans ${MODE}

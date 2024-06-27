@@ -1,8 +1,8 @@
 import pytz
 from datetime import datetime
 
-from src.scraper.parsers.kun_uz import KunUzParser
-from src.scraper.parsers.daryo import DaryoUzParser
+# from src.scraper.parsers.kun_uz import KunUzParser
+# from src.scraper.parsers.daryo import DaryoUzParser
 from src.scraper.parsers.uza_uz import UzaUzParser
 from src.scraper.parsers.zamon_uz import ZamonUzParser
 from src.scraper.parsers.dunyo_info import DunyoInfoParser
@@ -13,6 +13,7 @@ from src.scraper.parsers.aniq_uz import AniqUzParser
 from src.scraper.parsers.xs_uz import XsUzParser
 from src.scraper.parsers.xabar_uz import XabarUzParser
 from src.scraper.parsers.qalampir_uz import QalampirUzParser
+from src.scraper.parsers.gov_uz import GovUzParser
 
 from src.bot.utils.broadcaster import Broadcaster
 
@@ -35,20 +36,22 @@ async def parse_and_save_db():
         xs_uz = XsUzParser()
         xabar_uz = XabarUzParser()
         qalampir_uz = QalampirUzParser()
+        gov_uz = GovUzParser()
 
         # await kun_uz.parse_all_and_save()
         # await daryo_uz.parse_all_and_save()
 
-        await uza_uz.parse_all_and_save()
-        await zamon_uz.parse_all_and_save()
-        await dunyo_info.parse_all_and_save()
-        await darakchi_uz.parse_all_and_save()
-        await yuz_uz.parse_all_and_save()
-        await zamin_uz.parse_all_and_save()
-        await aniq_uz.parse_all_and_save()
-        await xs_uz.parse_all_and_save()
-        await xabar_uz.parse_all_and_save()
-        await qalampir_uz.parse_all_and_save()
+        # await uza_uz.parse_all_and_save()
+        # await zamon_uz.parse_all_and_save()
+        # await dunyo_info.parse_all_and_save()
+        # await darakchi_uz.parse_all_and_save()
+        # await yuz_uz.parse_all_and_save()
+        # await zamin_uz.parse_all_and_save()
+        # await aniq_uz.parse_all_and_save()
+        # await xs_uz.parse_all_and_save()
+        # await xabar_uz.parse_all_and_save()
+        # await qalampir_uz.parse_all_and_save()
+        await gov_uz.parse_all_and_save()
 
         broadcaster = Broadcaster()
         await broadcaster.broadcast()
