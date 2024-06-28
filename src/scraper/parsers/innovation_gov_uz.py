@@ -14,20 +14,18 @@ class InnovationGovUzParser(BaseParser):
     name = "innovation.gov.uz"
 
     def _load_attrs(self, category: str, url: str, language: str):
-        url_and_cat = url.split(',')
         self.category: str = category
-        self.url: str = url_and_cat[0]
+        self.url: str = url
         self.language: str = language
-        self.url_category = url_and_cat[1]
 
     async def fetch_data(self):
         url = self.url
 
-        headers = {"Code": self.url_category}
+        headers = {"Accept-Language": self.language}
 
         try:
             async with ClientSession(trust_env=True, headers=headers) as session:
-                async with session.get(url) as response:
+                async with session.get(url, ssl=False) as response:
                     if response.status == 200:
                         return await response.json()
                     else:
@@ -41,21 +39,22 @@ class InnovationGovUzParser(BaseParser):
             print(f"An error occurred: {e}")
                 
     def parse_data(self, raw_data):
-        all_data = raw_data['data']
+        all_data = raw_data['results']
         result = []
 
         for data in all_data:
-            datetime_object = datetime.strptime(data['date'], "%Y-%m-%d %H:%M:%S")
+            datetime_object = datetime.fromisoformat(data['pub_date']).replace(microsecond=0, tzinfo=None)
+
             result.append(
                 {
                     "title": data['title'],
-                    "url": f"https://{self.name}/{self.url_category}/news/view/" + str(data['id']),
-                    "image_url": data['anons_image'],
+                    "url": f"https://{self.name}/news/" + data['slug'],
+                    "image_url": data['image']['file'],
                     "source": self.name,
                     "category": self.category,
                     "date": datetime_object,
                     "language": self.language,
-                    "formatted_date": self.format_date(str(data['date']))
+                    "formatted_date": self.format_date(str(datetime_object))
                 }
             )
 

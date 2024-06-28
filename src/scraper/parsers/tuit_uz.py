@@ -11,8 +11,8 @@ from ..data.data_storage import DataStorage
 from src.db.database import Database
 
 
-class XabarUzParser(BaseParser):
-    name = "xabar.uz"
+class TuitUzParser(BaseParser):
+    name = "tuit.uz"
 
     def _load_attrs(self, category, url, language):
         self.category = category
@@ -21,12 +21,9 @@ class XabarUzParser(BaseParser):
 
     async def fetch_data(self):
         url = self.url
-        headers = {
-            "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36"
-        }
 
         try:
-            async with ClientSession(trust_env=True, headers=headers) as session:
+            async with ClientSession(trust_env=True) as session:
                 async with session.get(url) as response:
                     if response.status == 200:
                         return await response.text()
@@ -41,57 +38,38 @@ class XabarUzParser(BaseParser):
             print(f"An error occurred: {e}")
 
     def __extract_date_from_uz_date_str(self, date_str: str):
-        now = datetime.now()
+        res = date_str.split('|')        
+        date_part = res[1].strip()
+        time_part = res[2].strip()
+        datetime_str = f"{date_part} {time_part}"
 
-        if 'bugun' in date_str:
-            date_part = now.date()  # Today's date
-            time_part = date_str.split('.')[0].strip()[-5:]
-            datetime_str = f"{date_part} {time_part}"
-            datetime_obj = datetime.strptime(datetime_str, "%Y-%m-%d %H:%M")
-        
-        elif 'soat' in date_str:
-            hour = date_str.split()[0]
-            datetime_obj = now - timedelta(hours=int(hour))
-            datetime_obj = datetime_obj.replace(microsecond=0)
-
-        elif 'daqiqa' in date_str:
-            minute = date_str.split()[0]
-            datetime_obj = now - timedelta(minutes=int(minute))
-            datetime_obj = datetime_obj.replace(microsecond=0)
-        
-        else:
-            return
-
+        datetime_obj = datetime.strptime(datetime_str, "%d-%m-%Y %H:%M")
         return datetime_obj
                 
     def parse_data(self, raw_data):
         soup = BeautifulSoup(raw_data, 'html.parser')
-        all_data = soup.find('div', class_=['latest__news-list'])
+        all_data = soup.find_all('div', class_="tt_newsitem")
 
         result = []
 
         for data in all_data:
             if isinstance(data, Tag):
-                news_title = data.find('p', class_='news__item-title')
-                title = news_title.get_text(strip=True)
-                url = news_title.find('a')['href']
+                tt_newstxt = data.find('div', class_='tt_newstxt media-body')
+                title = tt_newstxt.find('h3').get_text(strip=True)
+                url = tt_newstxt.find('a')['href']
 
-                news_meta = data.find('p', class_='news__item-meta')
-                if not news_meta:
-                    news_meta = data.find('div', class_='news__item-meta') 
-                    date_time = news_meta.find('span', class_='date-time') 
-                    date_str = date_time.get_text(strip=True)
-                else:
-                    date_str = news_meta.get_text(strip=True)
+                tt_figure = data.find('figure', class_='tt_figure pull-left')
+                image_url = tt_figure.find('img')['src']
 
+                date_str = tt_newstxt.find('span', class_='dates').get_text(strip=True)
                 datetime_object = self.__extract_date_from_uz_date_str(date_str)
 
                 if datetime_object:
                     result.append(
                         {
                             "title": title,
-                            "url": url,
-                            "image_url": None,
+                            "url": "https://tuit.uz" + url,
+                            "image_url": image_url,
                             "source": self.name,
                             "category": self.category,
                             "date": datetime_object,
@@ -99,7 +77,7 @@ class XabarUzParser(BaseParser):
                             "formatted_date": self.format_date(str(datetime_object))
                         }
                     )
-                    
+
         return result
 
     async def save_data(self, data):

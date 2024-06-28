@@ -1,6 +1,7 @@
 import asyncio
 import aiohttp
 
+from typing import List, Dict
 from datetime import datetime
 from aiohttp import ClientSession, ClientConnectorError
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -37,14 +38,14 @@ class DunyoInfoParser(BaseParser):
             print(f"An error occurred: {e}")
                 
     def parse_data(self, raw_data):
-        all_data = raw_data['news']
+        all_data: List[Dict] = raw_data['news']
     
         result = []
 
         for data in all_data:
             datetime_object = datetime.strptime(data['date'], "%Y-%m-%dT%H:%M:%S.%fZ").replace(microsecond=0)
-
             slug = data.get('category').get('slug')
+
             result.append(
                 {
                     "title": data['title'],

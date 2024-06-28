@@ -1,6 +1,6 @@
 # parsers/base_parser.py
 import locale
-import aiohttp
+import logging
 import traceback
 
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -18,6 +18,9 @@ class BaseParser(ABC):
     name = None
 
     def __init__(self):
+        logging.basicConfig(level=logging.DEBUG, format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+        self.logger = logging.getLogger(__name__)
+
         self.engine = create_async_engine(url=conf.db.build_connection_str())
 
     @abstractmethod
@@ -58,9 +61,10 @@ class BaseParser(ABC):
 
                     self._load_attrs(category=category.name, url=url.url, language=url.language)
 
+                    self.logger.info("Request to url: " + url.url)
+
                     raw_data = await self.fetch_data()
                     parsed_data = self.parse_data(raw_data)
-
                     recent_news = await db.news.get_recent_news()
 
                     for data in parsed_data:
@@ -70,7 +74,9 @@ class BaseParser(ABC):
                         if is_today:
                             if data not in recent_news:                                
                                 await self.save_data(data)
-                                print("---Saved---")
+                                self.logger.info("+++Saved+++: " + data['title'])
+                        else:
+                            self.logger.warning("---Old new. Not saved---: " + data['title'])
             except Exception as e:
                 traceback.print_exc()
                 print(e)

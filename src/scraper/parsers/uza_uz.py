@@ -52,7 +52,7 @@ class UzaUzParser(BaseParser):
                     "category": self.category,
                     "date": datetime_object,
                     "language": self.language,
-                    "formatted_date": self.format_date(str(data['publish_time']))
+                    "formatted_date": self.format_date(str(datetime_object))
                 }
             )
 

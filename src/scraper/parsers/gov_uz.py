@@ -55,7 +55,7 @@ class GovUzParser(BaseParser):
                     "category": self.category,
                     "date": datetime_object,
                     "language": self.language,
-                    "formatted_date": self.format_date(str(data['date']))
+                    "formatted_date": self.format_date(str(datetime_object))
                 }
             )
 

@@ -128,16 +128,3 @@ class UrlAdmin(ModelView, model=Url):
                 session.add(model)
             return await session.commit()
 
-class ViewAdmin(ModelView, model=View):
-    column_list = [
-        View.user_id, View.news_id, View.created_at, 
-    ]
-    icon = "fa-solid fa-news"
-    name_plural = "Views"
-    
-    def is_visible(self, request: Request) -> bool:
-        return True
-
-    def is_accessible(self, request: Request) -> bool:
-        return True
-
