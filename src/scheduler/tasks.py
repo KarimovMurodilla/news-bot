@@ -17,6 +17,7 @@ from src.scraper.parsers.gov_uz import GovUzParser
 from src.scraper.parsers.innovation_gov_uz import InnovationGovUzParser
 from src.scraper.parsers.it_park_uz import ItparkUzParser
 from src.scraper.parsers.tuit_uz import TuitUzParser
+from src.scraper.parsers.president_uz import PresidentUzParser
 
 from src.bot.utils.broadcaster import Broadcaster
 
@@ -43,6 +44,7 @@ async def parse_and_save_db():
         innovation_gov_uz = InnovationGovUzParser()
         it_park_uz = ItparkUzParser()
         tuit_uz = TuitUzParser()
+        president_uz = PresidentUzParser()
 
         # await kun_uz.parse_all_and_save()
         # await daryo_uz.parse_all_and_save()
@@ -61,6 +63,7 @@ async def parse_and_save_db():
         await innovation_gov_uz.parse_all_and_save()
         await it_park_uz.parse_all_and_save()
         await tuit_uz.parse_all_and_save()
+        await president_uz.parse_all_and_save()
 
         broadcaster = Broadcaster()
         await broadcaster.broadcast()
