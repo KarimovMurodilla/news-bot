@@ -2,7 +2,7 @@ import random
 import traceback
 from datetime import datetime
 
-from aiogram import Router, types, F, html
+from aiogram import Router, types, F, html, exceptions
 from aiogram.fsm.context import FSMContext
 from aiogram.enums.parse_mode import ParseMode
 from aiogram.exceptions import TelegramBadRequest
@@ -42,31 +42,34 @@ async def category_handler(message: types.Message, db: Database, state: FSMConte
             for new in news
     ]
 
-    result = "".join([content for content in contents[:5]])
+    result = "".join([content for content in contents[:4]])
     
-    if image_url:
-        await message.answer_photo(
-            photo=image_url,
-            caption = result,
-            parse_mode=ParseMode.HTML,
-            disable_web_page_preview=True,
-            reply_markup=common.show_pagination_buttons()
-        )
-    else:
-        await message.answer(
-            text = result,
-            parse_mode=ParseMode.HTML,
-            disable_web_page_preview=True,
-            reply_markup=common.show_pagination_buttons()
-        )
+    try:
+        if image_url:
+            await message.answer_photo(
+                photo=image_url,
+                caption = result,
+                parse_mode=ParseMode.HTML,
+                disable_web_page_preview=True,
+                reply_markup=common.show_pagination_buttons()
+            )
+        else:
+            await message.answer(
+                text = result,
+                parse_mode=ParseMode.HTML,
+                disable_web_page_preview=True,
+                reply_markup=common.show_pagination_buttons()
+            )
 
-    await state.set_state(CategoryGroup.step1)
-    await state.update_data(
-        contents = contents,
-        images = images,
-        start = 0,
-        end = 5
-    )
+        await state.set_state(CategoryGroup.step1)
+        await state.update_data(
+            contents = contents,
+            images = images,
+            start = 0,
+            end = 4
+        )
+    except exceptions.TelegramBadRequest as tbr:
+        print(tbr)
 
 
 @news_router.callback_query(CategoryGroup.step1)
@@ -75,21 +78,21 @@ async def callback_pagination(c: types.CallbackQuery, state: FSMContext):
     images = data['images']
     contents = data['contents']
     start = data.get('start', 0)
-    end = data.get('end', 5)
+    end = data.get('end', 4)
 
     try:
         if c.data == "next":
-            if 0 < (len(contents) - end) < 5:
-                start += 5
+            if 0 < (len(contents) - end) < 4:
+                start += 4
                 end += (len(contents) - end)
 
             elif (len(contents) - end) > 0:
-                start += 5
-                end += 5
+                start += 4
+                end += 4
         
         elif c.data == "back":
             if start > 0:
-                start, end = start-5, start
+                start, end = start-4, start
             
         result = "".join([content for content in contents[start:end]])
         image_url = None
