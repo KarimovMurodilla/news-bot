@@ -37,7 +37,7 @@ class QalampirUzParser(BaseParser):
         except Exception as e:
             print(f"An error occurred: {e}")
 
-    def __extract_date_from_uz_date_str(self, date_str: str):
+    def __extract_date_from_str(self, date_str: str):
         # Get the current date and time
         now = datetime.now()
 
@@ -64,7 +64,7 @@ class QalampirUzParser(BaseParser):
                     image_url = news_card.find('img', class_='news-card-img')['src']
 
                     date_str = news_card.find('span', class_='date').get_text(strip=True)
-                    datetime_object = self.__extract_date_from_uz_date_str(date_str)
+                    datetime_object = self.__extract_date_from_str(date_str)
 
                     if datetime_object:
                         result.append(

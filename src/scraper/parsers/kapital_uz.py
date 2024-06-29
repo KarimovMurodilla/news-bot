@@ -1,46 +1,23 @@
-import re
 import asyncio
 import aiohttp
 
 from aiohttp import ClientSession, ClientConnectorError
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from datetime import datetime, timedelta
+from datetime import datetime
 from bs4 import BeautifulSoup, Tag
 from .base import BaseParser
 from ..data.data_storage import DataStorage
 from src.db.database import Database
 
 
-class ZaminUzParser(BaseParser):
-    name = "zamin.uz"
+class KapitalUzParser(BaseParser):
+    name = "kapital.uz"
 
     def _load_attrs(self, category, url, language):
         self.category = category
         self.url = url
         self.language = language
-
-    def __extract_date_from_str(self, date_str: str):
-        # Get the current date and time
-        now = datetime.now()
-
-        # Check for "Bugun" and "Kecha"
-        if "Bugun" in date_str:
-            date_part = now.date()  # Today's date
-            time_part = date_str.replace("Bugun, ", "")
-        elif "Kecha" in date_str:
-            date_part = (now - timedelta(days=1)).date()  # Yesterday's date
-            time_part = date_str.replace("Kecha, ", "")
-        else:
-            format_str = "%d-%m-%Y, %H:%M"
-            date_obj = datetime.strptime(date_str, format_str)
-            return date_obj
-
-        # Combine the date and time parts into a single datetime object
-        datetime_str = f"{date_part} {time_part}"
-        datetime_obj = datetime.strptime(datetime_str, "%Y-%m-%d %H:%M")
-
-        return datetime_obj
 
     async def fetch_data(self):
         url = self.url
@@ -60,33 +37,53 @@ class ZaminUzParser(BaseParser):
         except Exception as e:
             print(f"An error occurred: {e}")
 
+    def __extract_date_from_str(self, date_str: str):
+        month_map = {
+            'Yanvar': 1,
+            'Fevral': 2,
+            'Mart': 3,
+            'Aprel': 4,
+            'May': 5,
+            'Iyun': 6,
+            'Iyul': 7,
+            'Avgust': 8,
+            'Sentabr': 9,
+            'Oktabr': 10,
+            'Noyabr': 11,
+            'Dekabr': 12
+        }
+        today = datetime.now().date()
+
+        day, month_name, year = date_str.split()
+        month = month_map[month_name]
+        new_date = datetime(int(year), month, int(day))
+
+        if today == new_date.date():
+            datetime_object = datetime.now().replace(microsecond=0)            
+            return datetime_object
+                
     def parse_data(self, raw_data):
         soup = BeautifulSoup(raw_data, 'html.parser')
-        all_data = soup.find('div', class_=['sect-content fx-row'])
+        all_data = soup.find('div', class_="rubric-posts-wrapper")
 
         result = []
+        for data in all_data:
+            if isinstance(data, Tag):
+                img_wrapper = data.find('a', class_='img-wrapper')
+                title = img_wrapper.find('img')['alt']
+                url = img_wrapper['href']
+                image_url = img_wrapper.find('img')['src']
 
-        try:
-            for data in all_data:
-                if isinstance(data, Tag):
-                    item_content = data.find('div', class_="short-text")
+                post_content = data.find('div', class_='post__content')
+                date_str = post_content.find('span', class_='post-date').get_text(strip=True)
+                datetime_object = self.__extract_date_from_str(date_str)
 
-                    if item_content:
-                        a_tag = item_content.find('a', class_="short-title title")
-                        url = a_tag['href']
-                        title = a_tag.get_text(strip=True)
-
-                        short_date = data.find('div', class_="short-date fx-1 nowrap")
-                        date_str = short_date.get_text(strip=True)
-                        datetime_object = self.__extract_date_from_str(date_str)
-
-                        image_url = data.find('img')['src']
-
+                if datetime_object:
                     result.append(
                         {
                             "title": title,
                             "url": url,
-                            "image_url": f"https://{self.name}{image_url}",
+                            "image_url": image_url,
                             "source": self.name,
                             "category": self.category,
                             "date": datetime_object,
@@ -95,11 +92,8 @@ class ZaminUzParser(BaseParser):
                         }
                     )
 
-            return result
-        except Exception as e:
-            print(e)
-            print(self.category)
-            print(self.url)
+        print(result)
+        return result
 
     async def save_data(self, data):
         async with AsyncSession(self.engine) as session:

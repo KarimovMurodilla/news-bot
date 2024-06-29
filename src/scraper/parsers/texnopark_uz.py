@@ -1,4 +1,3 @@
-import re
 import asyncio
 import aiohttp
 
@@ -12,35 +11,13 @@ from ..data.data_storage import DataStorage
 from src.db.database import Database
 
 
-class ZaminUzParser(BaseParser):
-    name = "zamin.uz"
+class TexnoparkUzParser(BaseParser):
+    name = "texnopark.uz"
 
     def _load_attrs(self, category, url, language):
         self.category = category
         self.url = url
         self.language = language
-
-    def __extract_date_from_str(self, date_str: str):
-        # Get the current date and time
-        now = datetime.now()
-
-        # Check for "Bugun" and "Kecha"
-        if "Bugun" in date_str:
-            date_part = now.date()  # Today's date
-            time_part = date_str.replace("Bugun, ", "")
-        elif "Kecha" in date_str:
-            date_part = (now - timedelta(days=1)).date()  # Yesterday's date
-            time_part = date_str.replace("Kecha, ", "")
-        else:
-            format_str = "%d-%m-%Y, %H:%M"
-            date_obj = datetime.strptime(date_str, format_str)
-            return date_obj
-
-        # Combine the date and time parts into a single datetime object
-        datetime_str = f"{date_part} {time_part}"
-        datetime_obj = datetime.strptime(datetime_str, "%Y-%m-%d %H:%M")
-
-        return datetime_obj
 
     async def fetch_data(self):
         url = self.url
@@ -60,33 +37,33 @@ class ZaminUzParser(BaseParser):
         except Exception as e:
             print(f"An error occurred: {e}")
 
+    def __extract_date_from_str(self, date_str: str):
+        today = datetime.now().date()
+        new_date = datetime.strptime(date_str, "%d.%m.%Y")
+
+        if today == new_date.date():
+            datetime_object = datetime.now().replace(microsecond=0)            
+            return datetime_object
+                
     def parse_data(self, raw_data):
         soup = BeautifulSoup(raw_data, 'html.parser')
-        all_data = soup.find('div', class_=['sect-content fx-row'])
+        all_data = soup.find_all('a', class_="news-main__new-block")
 
         result = []
+        for data in all_data:
+            if isinstance(data, Tag):
+                title = data.find('h3', class_='news-main-block__title').get_text(strip=True)
+                url = data['href']
+                image_url = data.find('div', class_='news-main-block__img').find('img')['src']
+                date_str = data.find('span', class_='news-main-block__subtitle').get_text(strip=True)
+                datetime_object = self.__extract_date_from_str(date_str)
 
-        try:
-            for data in all_data:
-                if isinstance(data, Tag):
-                    item_content = data.find('div', class_="short-text")
-
-                    if item_content:
-                        a_tag = item_content.find('a', class_="short-title title")
-                        url = a_tag['href']
-                        title = a_tag.get_text(strip=True)
-
-                        short_date = data.find('div', class_="short-date fx-1 nowrap")
-                        date_str = short_date.get_text(strip=True)
-                        datetime_object = self.__extract_date_from_str(date_str)
-
-                        image_url = data.find('img')['src']
-
+                if datetime_object:
                     result.append(
                         {
                             "title": title,
                             "url": url,
-                            "image_url": f"https://{self.name}{image_url}",
+                            "image_url": image_url,
                             "source": self.name,
                             "category": self.category,
                             "date": datetime_object,
@@ -95,11 +72,7 @@ class ZaminUzParser(BaseParser):
                         }
                     )
 
-            return result
-        except Exception as e:
-            print(e)
-            print(self.category)
-            print(self.url)
+        return result
 
     async def save_data(self, data):
         async with AsyncSession(self.engine) as session:

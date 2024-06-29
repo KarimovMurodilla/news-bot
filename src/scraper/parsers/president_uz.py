@@ -37,7 +37,7 @@ class PresidentUzParser(BaseParser):
         except Exception as e:
             print(f"An error occurred: {e}")
 
-    def __extract_date_from_uz_date_str(self, date_str: str):
+    def __extract_date_from_str(self, date_str: str):
         today = datetime.now().date()
         datetime_object = datetime.strptime(date_str, "%d-%m-%Y")
 
@@ -61,14 +61,14 @@ class PresidentUzParser(BaseParser):
                 image_url = img_box.find('img')['src']
 
                 date_str = text_box.find('span', class_='date_text').get_text(strip=True)
-                datetime_object = self.__extract_date_from_uz_date_str(date_str)
+                datetime_object = self.__extract_date_from_str(date_str)
 
                 if datetime_object:
                     result.append(
                         {
                             "title": title,
-                            "url": "https://president.uz" + url,
-                            "image_url": "https://president.uz" + image_url,
+                            "url": f"https://{self.name}" + url,
+                            "image_url": f"https://{self.name}" + image_url,
                             "source": self.name,
                             "category": self.category,
                             "date": datetime_object,

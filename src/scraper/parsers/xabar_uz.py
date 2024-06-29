@@ -40,7 +40,7 @@ class XabarUzParser(BaseParser):
         except Exception as e:
             print(f"An error occurred: {e}")
 
-    def __extract_date_from_uz_date_str(self, date_str: str):
+    def __extract_date_from_str(self, date_str: str):
         now = datetime.now()
 
         if 'bugun' in date_str:
@@ -84,7 +84,7 @@ class XabarUzParser(BaseParser):
                 else:
                     date_str = news_meta.get_text(strip=True)
 
-                datetime_object = self.__extract_date_from_uz_date_str(date_str)
+                datetime_object = self.__extract_date_from_str(date_str)
 
                 if datetime_object:
                     result.append(

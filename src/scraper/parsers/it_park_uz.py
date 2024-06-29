@@ -40,7 +40,7 @@ class ItparkUzParser(BaseParser):
         except Exception as e:
             print(f"An error occurred: {e}")
 
-    def __extract_date_from_uz_date_str(self, date_str: str):
+    def __extract_date_from_str(self, date_str: str):
         today = datetime.now().date()
         datetime_object = datetime.strptime(date_str, "%Y-%m-%d")
 
@@ -60,7 +60,7 @@ class ItparkUzParser(BaseParser):
                 url = data.find('a', class_='article-card')['href']
                 image_url = data.find('img', class_='lazy')['data-src']
                 date_str = data.find('span', "article-card__timestamp").get_text(strip=True)
-                datetime_object = self.__extract_date_from_uz_date_str(date_str)
+                datetime_object = self.__extract_date_from_str(date_str)
 
                 if datetime_object:
                     result.append(

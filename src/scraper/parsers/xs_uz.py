@@ -38,7 +38,7 @@ class XsUzParser(BaseParser):
         except Exception as e:
             print(f"An error occurred: {e}")
 
-    def __extract_date_from_uz_date_str(self, date_str: str):
+    def __extract_date_from_str(self, date_str: str):
         # Set the locale to Uzbek
         locale.setlocale(locale.LC_TIME, 'uz_UZ.UTF-8')
         date_obj = datetime.strptime(date_str, '%H:%M %d %B %Y')
@@ -58,7 +58,7 @@ class XsUzParser(BaseParser):
                 url = 'https://xs.uz' + media_body.find('a')['href']
 
                 date_str = media_body.find('span', class_='date').get_text()
-                datetime_object = self.__extract_date_from_uz_date_str(date_str)
+                datetime_object = self.__extract_date_from_str(date_str)
 
                 if datetime_object:
                     result.append(

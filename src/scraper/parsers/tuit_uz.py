@@ -37,7 +37,7 @@ class TuitUzParser(BaseParser):
         except Exception as e:
             print(f"An error occurred: {e}")
 
-    def __extract_date_from_uz_date_str(self, date_str: str):
+    def __extract_date_from_str(self, date_str: str):
         res = date_str.split('|')        
         date_part = res[1].strip()
         time_part = res[2].strip()
@@ -62,13 +62,13 @@ class TuitUzParser(BaseParser):
                 image_url = tt_figure.find('img')['src']
 
                 date_str = tt_newstxt.find('span', class_='dates').get_text(strip=True)
-                datetime_object = self.__extract_date_from_uz_date_str(date_str)
+                datetime_object = self.__extract_date_from_str(date_str)
 
                 if datetime_object:
                     result.append(
                         {
                             "title": title,
-                            "url": "https://tuit.uz" + url,
+                            "url": f"https://{self.name}" + url,
                             "image_url": image_url,
                             "source": self.name,
                             "category": self.category,
